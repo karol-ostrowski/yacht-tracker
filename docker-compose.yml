@@ -1,7 +1,8 @@
 services:
+
   timescaledb:
     image: timescale/timescaledb:2.19.1-pg17
-    container_name: tsdb-regaty
+    container_name: tsdb
     environment:
       POSTGRES_USER: karol
       POSTGRES_PASSWORD: pass
@@ -13,13 +14,12 @@ services:
       - tsdb-regaty:/var/lib/postgresql/data
       - ./tsdb/db-setup.sql:/docker-entrypoint-initdb.d/init.sql
 
-  kafka:
-    image: apache/kafka:4.0.0
-    container_name: kafka-regaty
-    ports:
-      - "9092:9092"
+
+  broker:
+    image: apache/kafka:latest
+    container_name: broker
     environment:
-      KAFKA_NODE_ID: 1 # understand what wach of those do
+      KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
@@ -30,12 +30,19 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_NUM_PARTITIONS: 1
     volumes:
-      - ./kafka-data:/tmp/kraft-combined-logs
+      - kafka-regaty:/tmp/broker-logs
 
-    
+  consumer:
+    build: ./consumer
+    container_name: consumer
+    volumes:
+      - ./consumer:/app
+    depends_on:
+      - timescaledb
+      - broker
+  
 volumes:
   tsdb-regaty:
-  kafka-regaty: # seems like kafka doesnt get its volume? check it
-
+  kafka-regaty:

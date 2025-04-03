@@ -1,0 +1,9 @@
+FROM python:3.13.2-slim
+
+WORKDIR /app
+
+RUN pip install kafka-python psycopg2-binary
+
+COPY consumer.py .
+
+CMD ["python", "consumer.py"]
