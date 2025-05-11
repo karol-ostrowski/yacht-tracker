@@ -1,0 +1,11 @@
+FROM python:3.13.2-slim
+
+WORKDIR /app
+
+RUN pip install kafka-python psycopg2-binary
+
+COPY producer.py .
+
+CMD ["python", "producer.py"]
+
+# CMD ["sh", "-c", "python producer.py && tail -f /dev/null"]

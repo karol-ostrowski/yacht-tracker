@@ -1,0 +1,42 @@
+services:
+
+  consumer:
+    build: ./consumer
+    container_name: consumer
+    volumes:
+      - ./consumer:/app
+    #depends_on:
+      #- broker
+      #- timescaledb
+      #broker:
+        #condition: service_healthy
+      #timescaledb:
+        #condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - shared-network
+
+  producer:
+    build: ./producer
+    container_name: producer
+    volumes:
+      - ./producer:/app
+    #depends_on:
+      #- broker
+      #- timescaledb
+      #broker:
+        #condition: service_healthy
+      #timescaledb:
+       #condition: service_healthy
+    restart: unless-stopped
+    networks:
+        - shared-network
+  
+volumes:
+  tsdb-regaty:
+  kafka-regaty:
+
+networks:
+  shared-network:
+    external: true
+    name: regaty-network
