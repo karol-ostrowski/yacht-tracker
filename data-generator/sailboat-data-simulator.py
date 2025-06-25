@@ -1,27 +1,23 @@
 import random
-import matplotlib.pyplot as plt
-import time
 
 def main():
-    s1 = Sailboat("politechinka")
-    '''path = []
-    for i in range(5000):
-        path.append((s1.x, s1.y))
-        s1.move()
+    pass
+    # s1 = Sailboat("politechinka")
+    # path = []
+    # for i in range(5000):
+    #     path.append((s1.x, s1.y))
+    #     s1.move()
 
-    x = [p[0] for p in path]
-    y = [p[1] for p in path]
-    plt.plot(x, y)
-    plt.xlim((0, 1000))
-    plt.ylim((0, 1000))
-    plt.show()'''
-    while True:
-        print(f"X: {s1.x}, Y: {s1.y}")
-        s1.move()
-        time.sleep(0.05)
-
-        # chce zeby była funkcja która zwraca obiekt posiadający:
-        # nazwa jachtu, x, y, timestamp
+    # x = [p[0] for p in path]
+    # y = [p[1] for p in path]
+    # plt.plot(x, y)
+    # plt.xlim((0, 1000))
+    # plt.ylim((0, 1000))
+    # plt.show()
+    # while True:
+    #     print(f"X: {s1.x}, Y: {s1.y}")
+    #     s1.move()
+    #     time.sleep(0.05)
 
 class Sailboat:
     def __init__(self, name):

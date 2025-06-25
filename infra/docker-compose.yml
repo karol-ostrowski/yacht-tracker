@@ -23,7 +23,7 @@ services:
 
 
   broker: # for production consider disabling automatic topic creation
-    image: apache/kafka:latest
+    image: apache/kafka:4.0.0
     container_name: broker
     #healthcheck:
       #test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
@@ -47,6 +47,11 @@ services:
       - kafka-regaty:/tmp/broker-logs
     networks:
       - regaty-network
+    
+  kafdrop:
+    image: obsidiandynamics/kafdrop:4.1.0
+    container_name: kafdrop
+
   
 volumes:
   tsdb-regaty:
