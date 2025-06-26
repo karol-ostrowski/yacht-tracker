@@ -1,3 +1,4 @@
 psycopg==3.2.9
 kafka-python==2.2.13
 apache-flink==2.0.0
+pytest==8.4.1

@@ -1,6 +1,6 @@
 import random
 
-def main():
+def main() -> None:
     pass
     # s1 = Sailboat("politechinka")
     # path = []
@@ -20,16 +20,15 @@ def main():
     #     time.sleep(0.05)
 
 class Sailboat:
-    def __init__(self, name):
-        self.name = name
-        self.x = random.uniform(50, 950)
-        self.y = random.uniform(50, 950)
-        self.horizontal_speed = random.uniform(-1, 1)
-        self.vertical_speed = random.uniform(-1, 1)
+    def __init__(self, id):
+        self.id: int = id
+        self.x: float = random.uniform(50, 950)
+        self.y: float = random.uniform(50, 950)
+        self.horizontal_speed: float = random.uniform(-1, 1)
+        self.vertical_speed: float = random.uniform(-1, 1)
         
 
-    def move(self):
-        
+    def move(self) -> None:
         if random.uniform(0, 1) > 0.8:
             if random.uniform(0, 1) > 0.5:
                 if random.uniform(0, 1) > 0.5:

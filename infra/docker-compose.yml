@@ -17,7 +17,7 @@ services:
     restart: no
     volumes:
       - tsdb-regaty:/var/lib/postgresql/data
-      - ./tsdb/db-setup.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./tsdb/db_setup.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - regaty-network
 
@@ -51,6 +51,14 @@ services:
   kafdrop:
     image: obsidiandynamics/kafdrop:4.1.0
     container_name: kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: broker:9092
+    depends_on:
+      - broker
+    networks:
+      - regaty-network
 
   
 volumes:
