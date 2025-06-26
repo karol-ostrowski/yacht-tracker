@@ -1,26 +1,30 @@
+"""
+A module implementing a class for generating fake data for development purposes.
+"""
 import random
 
-def main() -> None:
-    pass
-    # s1 = Sailboat("politechinka")
-    # path = []
-    # for i in range(5000):
-    #     path.append((s1.x, s1.y))
-    #     s1.move()
-
-    # x = [p[0] for p in path]
-    # y = [p[1] for p in path]
-    # plt.plot(x, y)
-    # plt.xlim((0, 1000))
-    # plt.ylim((0, 1000))
-    # plt.show()
-    # while True:
-    #     print(f"X: {s1.x}, Y: {s1.y}")
-    #     s1.move()
-    #     time.sleep(0.05)
-
 class Sailboat:
+    """
+    Creates fake sailboat sensor data.
+    
+    Attributes:
+        id: Identification number of a sailboat.
+        x: x-coordinate, randomly generated upon creation, changed by using the move() method.
+        y: y-coordinate, randomly generated upon creation, changed by using the move() method.
+        horizontal_speed: x-axis component of the speed, randomly generated,
+                          changed by using the move() method.
+        vertical_speed: y-axis component of the speed, randomly generated,
+                          changed by using the move() method.
+
+
+    """
     def __init__(self, id):
+        """
+        Initializes a Sailboat object.
+
+        Args:
+            id: Identification number of a sailboat.
+        """
         self.id: int = id
         self.x: float = random.uniform(50, 950)
         self.y: float = random.uniform(50, 950)
@@ -29,6 +33,9 @@ class Sailboat:
         
 
     def move(self) -> None:
+        """
+        Updates the sailboat's location and speed.
+        """
         if random.uniform(0, 1) > 0.8:
             if random.uniform(0, 1) > 0.5:
                 if random.uniform(0, 1) > 0.5:
@@ -56,6 +63,3 @@ class Sailboat:
             self.vertical_speed *= -1
         else:
             self.y += self.vertical_speed
-
-if __name__ == "__main__":
-    main()
