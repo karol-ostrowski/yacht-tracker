@@ -1,11 +1,8 @@
-"""
-A module implementing a class for generating fake data for development purposes.
-"""
+"""A module implementing a class for generating fake data for development purposes."""
 import random
 
 class Sailboat:
-    """
-    Creates fake sailboat sensor data.
+    """Creates fake sailboat sensor data.
     
     Attributes:
         id: Identification number of a sailboat.
@@ -15,12 +12,9 @@ class Sailboat:
                           changed by using the move() method.
         vertical_speed: y-axis component of the speed, randomly generated,
                           changed by using the move() method.
-
-
     """
     def __init__(self, id):
-        """
-        Initializes a Sailboat object.
+        """Initializes a Sailboat object.
 
         Args:
             id: Identification number of a sailboat.
@@ -33,9 +27,7 @@ class Sailboat:
         
 
     def move(self) -> None:
-        """
-        Updates the sailboat's location and speed.
-        """
+        """Updates the sailboat's location and speed."""
         if random.uniform(0, 1) > 0.8:
             if random.uniform(0, 1) > 0.5:
                 if random.uniform(0, 1) > 0.5:
