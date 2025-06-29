@@ -94,8 +94,6 @@ def safe_parse(x: str):
             message["speed"] = "0"
             return message'''
 
-    
-
 def main() -> None:
     """Holds main pipeline execution steps."""
     env = StreamExecutionEnvironment.get_execution_environment()
