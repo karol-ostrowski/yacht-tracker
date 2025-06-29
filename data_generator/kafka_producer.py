@@ -7,14 +7,14 @@ import time
 import random
 import argparse
 
+KAFKA_BROKER = "localhost:29092"
+TOPIC_NAME = "raw_sensor_data"
+
 logger = logging.getLogger("Data generator")
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S")
-
-KAFKA_BROKER = "localhost:29092"
-TOPIC_NAME = "raw_sensor_data"
+    datefmt="%Y-%m-%d %H:%M:%S"),
 
 def create_producer() -> KafkaProducer:
     """Creates a Kafka producer.
@@ -77,7 +77,7 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
                     "id" : moving_sailboard.id,
                     "x" : moving_sailboard.x,
                     "y" : moving_sailboard.y,
-                    "timestamp" : int(time.time() * 1000)
+                    "timestamp" : time.time(),
                 }
                 producer.send(
                     TOPIC_NAME,
