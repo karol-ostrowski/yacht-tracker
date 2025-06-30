@@ -9,13 +9,25 @@ from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.common.typeinfo import Types
 from pyflink.datastream import StreamExecutionEnvironment
 from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer
-from pyflink.datastream import MapFunction, RuntimeContext
+from pyflink.datastream import MapFunction, RuntimeContext, ProcessFunction, OutputTag
 from pyflink.datastream.state import ListStateDescriptor, StateTtlConfig, Time
 from pyflink.datastream.functions import FlatMapFunction
+from pyflink.table import Row
 
 KAFKA_BROKER = "localhost:29092"
 IN_TOPIC_NAME = "raw_sensor_data"
 GROUP_ID = "raw_data_consumers"
+
+# to be exported
+LATE_DATA_TAG = OutputTag(
+    tag_id="late_data",
+    type_info=Types.ROW([
+        Types.INT(),
+        Types.FLOAT(),
+        Types.FLOAT(),
+        Types.FLOAT()
+    ])
+)
 
 logger = logging.getLogger("Flink job")
 logging.basicConfig(
@@ -23,25 +35,42 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
+    
+class ParseAndFilter(ProcessFunction):
+    """Parse the event and filter out if out of order.
+    Filtering is needed for ensuring correct behaviour of future transformations."""
+    def __init__(self):
+        self.most_recent_timestamp = 0
+        
+    def process_element(self, event: str, ctx: ProcessFunction.Context):
+        try:
+            d = json.loads(event)
+            if d["timestamp"] > self.most_recent_timestamp:
+                self.most_recent_timestamp = d["timestamp"]
+                yield Row(
+                    id = d["id"],
+                    x = d["x"],
+                    y = d["y"],
+                    timestamp=d["timestamp"]
+                )
 
-def safe_parse(x: str):
-    """Makes sure the script keeps running if parsing fails."""
-    try:
-        d = json.loads(x)
-        return {
-            "id": str(d["id"]),
-            "x": str(d["x"]),
-            "y": str(d["y"]),
-            "timestamp": str(d["timestamp"])
-        }
-    except json.JSONDecodeError as e:
-        logger.error(f"An error occured during parsing: {e}")
-        return {
-            "id": "999",
-            "x": "0",
-            "y": "0",
-            "timestamp": f"{time.time()}"
-        }
+            else:
+                yield \
+                    LATE_DATA_TAG, \
+                    Row(
+                        id = d["id"],
+                        x = d["x"],
+                        y = d["y"],
+                        timestamp=d["timestamp"]
+                    )
+                
+        except json.JSONDecodeError as e:
+            logger.error(f"An error occured when parsing an event ({event}): {e}")
+
+"""
+jak obsluguje state samemu, to moze mapfunction bedzie wystarczający? po prostu wylaczyc ttl
+jako state zobaczyc moze po prostu zrobic instance variable inego typu niz lista, np cos co daje szybki push i pop z obu stron
+"""
 
 # class MyProcessWindowFunction(ProcessWindowFunction):
 
@@ -113,33 +142,39 @@ def main() -> None:
                          watermark_strategy=WatermarkStrategy.no_watermarks(),
                          source_name="raw_data_source")
     
-    parsed_ds = ds.map(
-        func=safe_parse,
-        output_type=Types.MAP(
-            key_type_info=Types.STRING(),
-            value_type_info=Types.STRING()
-        )
+    parsed_ds = ds.process(
+        func=ParseAndFilter(),
+        output_type=Types.ROW([
+            Types.INT(),
+            Types.FLOAT(),
+            Types.FLOAT(),
+            Types.FLOAT()
+        ])
     )
 
-    enriched_ds = parsed_ds \
-        .key_by(
-            key_selector=(lambda x: x["id"]),
-            key_type=Types.STRING()
-        ) \
-        .map(
-            func=CalculateAvgSpeed(),
-            output_type=Types.MAP(
-                key_type_info=Types.STRING(),
-                value_type_info=Types.STRING()
-            )
-        )
+    # TODO
+    # add aggregating tumbling window, count late data per id, use watermark mechanism
+    late_data_ds = parsed_ds.get_side_output(LATE_DATA_TAG)
+
+    # enriched_ds = parsed_ds \
+    #     .key_by(
+    #         key_selector=(lambda x: x["id"]),
+    #         key_type=Types.STRING()
+    #     ) \
+    #     .map(
+    #         func=CalculateAvgSpeed(),
+    #         output_type=Types.MAP(
+    #             key_type_info=Types.STRING(),
+    #             value_type_info=Types.STRING()
+    #         )
+    #     )
 
     # window = parsed_ds \
     # .key_by(lambda v: v[0]) \
     # .window(TumblingEventTimeWindows.of(Time(50))) \
     # .process(MyProcessWindowFunction())
 
-    enriched_ds.print()
+    parsed_ds.print()
 
     env.execute()
     
