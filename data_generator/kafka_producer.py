@@ -83,7 +83,7 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
                     TOPIC_NAME,
                     value=message
                 ).add_callback(on_delivery_success).add_errback(on_delivery_failure)
-                time.sleep(random.uniform(0.01, 0.05))
+                time.sleep(random.uniform(0.1, 0.15))
     finally:
         logger.info("Flushing messages and closing the producer...")
         producer.flush()
