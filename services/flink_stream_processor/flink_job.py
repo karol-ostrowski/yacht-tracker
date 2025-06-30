@@ -2,18 +2,17 @@
 import logging
 import json
 import time
-from collections import deque
-from typing import Iterable, Tuple
 from pathlib import Path
+from pyflink.common import Configuration
 from pyflink.common.serialization import SimpleStringSchema
 from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.common.typeinfo import Types
 from pyflink.datastream import StreamExecutionEnvironment, RuntimeExecutionMode
-from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer, KafkaSink, KafkaRecordSerializationSchema, FlinkKafkaProducer
+from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer, KafkaSink, KafkaRecordSerializationSchema
 from pyflink.datastream import MapFunction, RuntimeContext, ProcessFunction, OutputTag
 from pyflink.datastream.state import ListStateDescriptor, ListState
-from pyflink.datastream.functions import FlatMapFunction, SinkFunction
-from pyflink.table import Row, StreamTableEnvironment
+from pyflink.datastream.functions import FlatMapFunction
+from pyflink.table import Row
 
 KAFKA_BROKER = "localhost:29092"
 IN_TOPIC_NAME = "raw_sensor_data"
@@ -37,10 +36,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-class RealTimePrint(SinkFunction):
-    def invoke(self, event, ctx):
-        print(event, flush=True)
-
 class ParseAndFilter(ProcessFunction):
     """Parse the event and filter out if out of order.
     Filtering is needed for ensuring correct behaviour of future transformations."""
@@ -52,14 +47,12 @@ class ParseAndFilter(ProcessFunction):
             d = json.loads(event)
             if d["timestamp"] > self.most_recent_timestamp:
                 self.most_recent_timestamp = d["timestamp"]
-                yield Row(release_time = time.time())
-                '''yield Row(
+                yield Row(
                     id = d["id"],
                     x = d["x"],
                     y = d["y"],
-                    timestamp=d["timestamp"],
-                    tt = (time.time() - d["timestamp"])
-                )'''
+                    timestamp=d["timestamp"]
+                )
 
             else:
                 yield \
@@ -73,11 +66,6 @@ class ParseAndFilter(ProcessFunction):
                 
         except json.JSONDecodeError as e:
             logger.error(f"An error occured when parsing an event ({event}): {e}")
-
-class RowToJson(MapFunction):
-        def map(self, value: Row) -> str:
-            return json.dumps(value.as_dict())
-
 
 # "State TTL is still not supported in PyFlink DataStream API." ~ Flink docs ;cccc
 class CalculateAvgSpeed(FlatMapFunction):
@@ -124,43 +112,13 @@ class CalculateAvgSpeed(FlatMapFunction):
         except IndexError:
             self.list_state.add(event)
 
-
-
-
-        '''if not queue:
-            self.list_state.add(event)
-            return
-        
-        while queue:
-            leftmost_event: Row = queue[0]
-            time_diff = event.timestamp - leftmost_event.timestamp
-            if time_diff >= 5:
-                del queue[0]
-            
-            elif 1 < time_diff < 5:
-                distance = ((event.x - leftmost_event.x) ** 2 \
-                         +  (event.y - leftmost_event.y) ** 2) ** 0.5
-                avg_speed = distance / time_diff
-                queue.append(event)
-                self.list_state.update(queue)
-                yield Row(
-                    id = event.id,
-                    x = event.x,
-                    y = event.y,
-                    timestamp = event.timestamp,
-                    speed = avg_speed
-                )
-
-            elif time_diff <= 1:
-                queue.append(event)
-                self.list_state.update(queue)
-                return'''
-
 def main() -> None:
     """Holds main pipeline execution steps."""
-    env = StreamExecutionEnvironment.get_execution_environment()
+    config = Configuration()
+    config.set_string("python.fn-execution.bundle.size", "1")
+    config.set_string("python.fn-execution.bundle.time", "0")
+    env = StreamExecutionEnvironment.get_execution_environment(config)
     env.set_runtime_mode(RuntimeExecutionMode.STREAMING)
-    env.set_buffer_timeout(0)
     env.set_parallelism(1)
     flink_connector_name = "flink-sql-connector-kafka-4.0.0-2.0.jar"
     kafka_jar = Path(__file__).resolve().parent / flink_connector_name
@@ -172,9 +130,6 @@ def main() -> None:
         .set_topics(IN_TOPIC_NAME) \
         .set_group_id(GROUP_ID) \
         .set_value_only_deserializer(SimpleStringSchema()) \
-        .set_property("fetch.min.bytes", "1") \
-        .set_property("fetch.max.wait.ms", "10") \
-        .set_property("max.poll.records", "100") \
         .build()
     
     record_serializer = KafkaRecordSerializationSchema.builder() \
@@ -193,41 +148,34 @@ def main() -> None:
     parsed_ds = ds.process(
         func=ParseAndFilter(),
         output_type=Types.ROW_NAMED(
-            ["release_time"],
-            [Types.DOUBLE()]
+            ["id", "x", "y", "timestamp"],
+            [Types.INT(), Types.FLOAT(), Types.FLOAT(), Types.DOUBLE()]
         )
     )
-    '''parsed_ds = ds.process(
-        func=ParseAndFilter(),
-        output_type=Types.ROW_NAMED(
-            ["id", "x", "y", "timestamp", "tt"],
-            [Types.INT(), Types.FLOAT(), Types.FLOAT(), Types.DOUBLE(), Types.DOUBLE()]
-        )
-    )'''
 
     # TODO
     # add aggregating tumbling window, count late data per id, use watermark mechanism
-    # late_data_ds = parsed_ds.get_side_output(LATE_DATA_TAG)
+    late_data_ds = parsed_ds.get_side_output(LATE_DATA_TAG)
 
-    # enriched_ds = parsed_ds \
-    #     .key_by(
-    #         key_selector=(lambda event: event.id),
-    #         key_type=Types.INT()
-    #     ) \
-    #     .flat_map(
-    #         func=CalculateAvgSpeed(),
-    #         output_type=Types.ROW_NAMED(
-    #             ["id", "x", "y", "timestamp", "avg_speed", "time_taken"],
-    #             [Types.INT(), Types.FLOAT(), Types.FLOAT(), Types.DOUBLE(), Types.FLOAT(), Types.DOUBLE()]
-    #         )
-    #     )
+    enriched_ds = parsed_ds \
+        .key_by(
+            key_selector=(lambda event: event.id),
+            key_type=Types.INT()
+        ) \
+        .flat_map(
+            func=CalculateAvgSpeed(),
+            output_type=Types.ROW_NAMED(
+                ["id", "x", "y", "timestamp", "avg_speed", "time_taken"],
+                [Types.INT(), Types.FLOAT(), Types.FLOAT(), Types.DOUBLE(), Types.FLOAT(), Types.DOUBLE()]
+            )
+        )
 
     # window = parsed_ds \
     # .key_by(lambda v: v[0]) \
     # .window(TumblingEventTimeWindows.of(Time(50))) \
     # .process(MyProcessWindowFunction())
 
-    parsed_ds.map(RowToJson(), output_type=Types.STRING()).sink_to(sink)
+    enriched_ds.print()#map(RowToJson(), output_type=Types.STRING()).sink_to(sink)
     env.execute()
     
 
