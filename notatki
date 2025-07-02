@@ -1,8 +1,0 @@
-- sprawdzic czy np mongodb nie bedzie lepsze zamiast tsdb, zrobic prowonanie preskości
-dodatkowo moze mongodb daloby rade byc jedyna baza danych (dla raw data tez, moze zalozenie
-ze dane sa w formacie json jest ok). sprawdzic performance np mongo vs ts, mongo vs influxdb.
-
-- dodac timestampy na kazdym kroku do porownania pozniej zeby mozna bylo zobaczyc ile
-kazdy krok potrzebuje czasu na wykonanie, wydaje mi sie ze przy generowaniu zdarzenia to 
-po prostu pole z time.time(), ale flink ma te watermarki i trzeba sie dowiedziec jakie one
-daja mozliwosci

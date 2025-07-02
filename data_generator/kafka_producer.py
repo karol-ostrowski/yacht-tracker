@@ -26,6 +26,8 @@ def create_producer() -> KafkaProducer:
         bootstrap_servers = [KAFKA_BROKER],
         value_serializer = lambda x : json.dumps(x).encode("utf-8")
     )
+    # TODO
+    # this logger info is not that useful, improve it
     logger.info(f"Connected a producer to {KAFKA_BROKER}")
     return producer
 
@@ -40,7 +42,7 @@ def generate_sailboats(num_of_sailboats: int = 1) -> list[Sailboat]:
     """
     sailboats = []
     for i in range(num_of_sailboats):
-        sailboats.append(Sailboat(i))
+        sailboats.append(Sailboat(i + 1))
     logger.info(f"Generated {num_of_sailboats} sailboats.")
     return sailboats
 
@@ -73,16 +75,21 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
             while shuffled_sailboats:
                 moving_sailboard = shuffled_sailboats.pop()
                 moving_sailboard.move()
+                timestamp = time.time()
+                if random.uniform(0, 1) > 0.50:
+                    timestamp -= 5
                 message = {
                     "id" : moving_sailboard.id,
                     "x" : moving_sailboard.x,
                     "y" : moving_sailboard.y,
-                    "timestamp" : time.time(),
+                    "timestamp" : timestamp,
                 }
                 producer.send(
                     TOPIC_NAME,
                     value=message
                 ).add_callback(on_delivery_success).add_errback(on_delivery_failure)
+                # TODO
+                # make this waiting mechanism not stupid
                 time.sleep(random.uniform(0.1, 0.15))
     finally:
         logger.info("Flushing messages and closing the producer...")
