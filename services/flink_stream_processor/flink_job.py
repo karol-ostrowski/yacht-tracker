@@ -175,12 +175,20 @@ def main() -> None:
     config = Configuration()
     config.set_string("python.fn-execution.bundle.size", "1")
     config.set_string("python.fn-execution.bundle.time", "0")
+    config.set_string("metrics.latency.interval", "2000")
+    config.set_string("metrics.reporters", "prom")
+    config.set_string("metrics.reporter.prom.factory.class", "org.apache.flink.metrics.prometheus.PrometheusReporterFactory")
+    config.set_string("metrics.reporter.prom.port", "9249-9259")
+    config.set_string("python.executable", "/usr/bin/python3.9")
     env = StreamExecutionEnvironment.get_execution_environment(config)
     env.set_runtime_mode(RuntimeExecutionMode.STREAMING)
     env.set_parallelism(1)
     flink_connector_name = "flink-sql-connector-kafka-4.0.0-2.0.jar"
+    prom_metrics_name = "flink-metrics-prometheus-2.0.0.jar"
     kafka_jar = Path(__file__).resolve().parent / flink_connector_name
+    prom_jar = Path(__file__).resolve().parent / prom_metrics_name
     env.add_jars(kafka_jar.as_uri())
+    env.add_jars(prom_jar.as_uri())
 
     source = KafkaSource.builder() \
         .set_starting_offsets(KafkaOffsetsInitializer.latest()) \

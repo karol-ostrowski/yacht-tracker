@@ -7,10 +7,29 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/prometheus.yml
       - ./prometheus/data:/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--config.file=/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--web.enable-admin-api"
       - "--web.enable-lifecycle"
+
+  grafana:
+    image: grafana/grafana:12.0.2
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/grafana
+    depends_on:
+      - prometheus
+
+  # mimir:
+  #   image:
+
+  # loki:
+  #   image: grafana/loki:3.5.1
+
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:v0.52.0
