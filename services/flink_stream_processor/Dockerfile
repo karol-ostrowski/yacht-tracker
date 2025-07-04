@@ -89,11 +89,6 @@ RUN set -ex; \
     "-repKV" "taskmanager.bind-host,localhost,0.0.0.0" \
     "-rmKV" "taskmanager.host=localhost";
 
-# Configure container
-COPY docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
-EXPOSE 6123 8081
-
 RUN apt-get update && \
     apt-get install software-properties-common -y && \
     add-apt-repository ppa:deadsnakes/ppa -y && \
@@ -105,17 +100,24 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     python3.9 get-pip.py && \
     rm get-pip.py
 
-COPY --chown=flink:flink ./flink-job-requirements.txt /opt/flink/requirements.txt
+COPY ./flink-job-requirements.txt /opt/flink/requirements.txt
 
 RUN pip install -r requirements.txt
 
 COPY ./flink-metrics-prometheus-2.0.0.jar $FLINK_HOME/lib/flink-metrics-prometheus-2.0.0.jar
 
-COPY --chown=flink:flink ./test_job.py /opt/flink/test_job.py
+COPY ./flink-sql-connector-kafka-4.0.0-2.0.jar $FLINK_HOME/lib/flink-sql-connector-kafka-4.0.0-2.0.jar
 
-RUN echo "\nmetrics.reporters: prom" >> $FLINK_HOME/conf/config.yaml && \
-    echo "metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter" >> $FLINK_HOME/conf/config.yaml
+COPY ./flink_job.py /opt/flink/flink_job.py
 
-EXPOSE 9249
+COPY ./side_output_functions.py /opt/flink/side_output_functions.py
 
-CMD ["standalone-job", "flink_job.py"]
+COPY docker-entrypoint.sh /
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+EXPOSE 6123 8081 9249
+
+# RUN echo "\nmetrics.reporters: prom" >> $FLINK_HOME/conf/config.yaml && \
+#     echo "metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter" >> $FLINK_HOME/conf/config.yaml
+
+RUN ln -sf /usr/bin/python3.9 /usr/bin/python

@@ -17,7 +17,7 @@ from pyflink.datastream.window import TumblingProcessingTimeWindows
 from pyflink.table import Row
 from side_output_functions import create_default_statistic
 
-KAFKA_BROKER = "localhost:29092"
+KAFKA_BROKER = "broker:9092"
 IN_TOPIC_NAME = "raw_sensor_data"
 OUT_TOPIC_NAME = "enriched_data"
 GROUP_ID = "raw_data_consumers"
@@ -183,12 +183,13 @@ def main() -> None:
     env = StreamExecutionEnvironment.get_execution_environment(config)
     env.set_runtime_mode(RuntimeExecutionMode.STREAMING)
     env.set_parallelism(1)
-    flink_connector_name = "flink-sql-connector-kafka-4.0.0-2.0.jar"
-    prom_metrics_name = "flink-metrics-prometheus-2.0.0.jar"
-    kafka_jar = Path(__file__).resolve().parent / flink_connector_name
-    prom_jar = Path(__file__).resolve().parent / prom_metrics_name
-    env.add_jars(kafka_jar.as_uri())
-    env.add_jars(prom_jar.as_uri())
+    # flink_connector_name = "flink-sql-connector-kafka-4.0.0-2.0.jar"
+    # prom_metrics_name = "flink-metrics-prometheus-2.0.0.jar"
+    # kafka_jar = Path(__file__).resolve().parent / flink_connector_name
+    # prom_jar = Path(__file__).resolve().parent / prom_metrics_name
+    # kafka_jar = Path("/opt/flink") / flink_connector_name
+    # prom_jar = Path("/opt/flink") / prom_metrics_name
+    # env.add_jars(",".join([kafka_jar.as_uri(), prom_jar.as_uri()]))
 
     source = KafkaSource.builder() \
         .set_starting_offsets(KafkaOffsetsInitializer.latest()) \

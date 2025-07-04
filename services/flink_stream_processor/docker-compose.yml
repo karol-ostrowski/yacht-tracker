@@ -1,4 +1,0 @@
-service:
-  flink:
-    container_name: flink
-    image: flink:scala_2.12-java11

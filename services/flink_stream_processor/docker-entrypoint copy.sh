@@ -165,11 +165,12 @@ elif [ "$1" = "jobmanager" ]; then
 
     exec $(drop_privs_cmd) "$FLINK_HOME/bin/jobmanager.sh" start-foreground "${args[@]}"
 elif [ "$1" = ${COMMAND_STANDALONE} ]; then
-    args=("${args[@]:1}")
-
     echo "Starting Job Manager"
+    $(drop_privs_cmd) "$FLINK_HOME/bin/standalone-job.sh" start &
+    sleep 15
+    exec $(drop_privs_cmd) flink run -py /opt/flink/"$2" \
+    -D pipeline.jars="file:///opt/flink/flink-sql-connector-kafka-4.0.0-2.0.jar,file:///opt/flink/flink-metrics-prometheus-2.0.0.jar"
 
-    exec $(drop_privs_cmd) "$FLINK_HOME/bin/standalone-job.sh" start-foreground "${args[@]}"
 elif [ "$1" = ${COMMAND_HISTORY_SERVER} ]; then
     args=("${args[@]:1}")
 
