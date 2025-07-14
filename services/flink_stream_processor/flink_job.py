@@ -172,13 +172,12 @@ class CreateLateOnTimeStatistic(AggregateFunction):
 
 def main() -> None:
     """Holds main pipeline execution steps."""
+    # TODO
+    # probably i can set up config with docker compose file instead of this code below
     config = Configuration()
     config.set_string("python.fn-execution.bundle.size", "1")
     config.set_string("python.fn-execution.bundle.time", "0")
     config.set_string("metrics.latency.interval", "2000")
-    config.set_string("metrics.reporters", "prom")
-    config.set_string("metrics.reporter.prom.factory.class", "org.apache.flink.metrics.prometheus.PrometheusReporterFactory")
-    config.set_string("metrics.reporter.prom.port", "9249-9259")
     config.set_string("python.executable", "/usr/bin/python3.9")
     env = StreamExecutionEnvironment.get_execution_environment(config)
     env.set_runtime_mode(RuntimeExecutionMode.STREAMING)

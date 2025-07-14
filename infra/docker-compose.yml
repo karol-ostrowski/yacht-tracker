@@ -3,11 +3,6 @@ services:
   timescaledb:
     image: timescale/timescaledb:2.19.1-pg17
     container_name: tsdb
-    #healthcheck:
-      #test: ["CMD-SHELL", "pg_isready -U karol -d tsdb"]
-      #interval: 5s
-      #timeout: 5s
-      #retries: 10
     environment:
       POSTGRES_USER: karol
       POSTGRES_PASSWORD: pass
@@ -74,6 +69,3 @@ networks:
     name: regaty-network
     driver: bridge
     external: true
-  # default:
-  #   external: false
-  #   name: none
