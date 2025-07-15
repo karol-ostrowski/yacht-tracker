@@ -12,8 +12,7 @@ services:
     command:
       - "--config.file=/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
-      - "--web.enable-admin-api"
-      - "--web.enable-lifecycle"
+      - "--storage.tsdb.retention.time=2d"
     networks:
       - regaty-network
 
@@ -29,14 +28,52 @@ services:
     networks:
       - regaty-network
 
-  # mimir:
-  #   image:
+  mimir:
+    image: grafana/mimir:2.15.3
+    container_name: mimir
+    ports:
+      - "9009:9009"
+    volumes:
+      - ./mimir/mimir.yaml:/etc/mimir/mimir.yaml
+    command:
+      - "--config.file=/etc/mimir/mimir.yaml"
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    networks:
+      - regaty-network
 
-  # loki:
-  #   image: grafana/loki:3.5.1
+  loki:
+    image: grafana/loki:3.5.1
+    container_name: loki
+    volumes:
+      - ./loki/loki.yaml:/etc/loki/loki.yaml
+    command:
+      - "--config.file=/etc/loki/loki.yaml"
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    networks:
+      - regaty-network
 
-  # cadvisor:
-  #   image: gcr.io/cadvisor/cadvisor:v0.52.0
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    networks:
+      - regaty-network
 
 networks:
   regaty-network:
