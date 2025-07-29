@@ -1,0 +1,100 @@
+// ###############################
+// #### Metrics Configuration ####
+// ###############################
+
+// Configure a prometheus.remote_write component to send metrics to a Prometheus server.
+prometheus.remote_write "mimir" {
+  endpoint {
+    url = "http://mimir:9009/api/v1/push"
+  }
+}
+
+// Scrape custom application targets
+prometheus.scrape "flink" {
+  targets = [
+    { __address__ = "jobmanager:9249" },
+    { __address__ = "taskmanager:9249" },
+  ]
+  forward_to = [prometheus.remote_write.mimir.receiver]
+  scrape_interval = "15s"
+}
+
+prometheus.scrape "loki" {
+  targets = [
+    { __address__ = "loki:3100" },
+  ]
+  forward_to = [prometheus.remote_write.mimir.receiver]
+  scrape_interval = "15s"
+}
+
+prometheus.scrape "node_exporter" {
+  targets = [
+    { __address__ = "node-exporter:9100" },
+  ]
+  forward_to = [prometheus.remote_write.mimir.receiver]
+  scrape_interval = "15s"
+}
+
+// Scrape Alloy's own metrics
+prometheus.exporter.self "self_metrics" {}
+
+prometheus.scrape "self_scrape" {
+  targets    = prometheus.exporter.self.self_metrics.targets
+  forward_to = [prometheus.remote_write.mimir.receiver]
+  scrape_interval = "15s"
+}
+
+// ###############################
+// #### Logging Configuration ####
+// ###############################
+
+// Discover Docker containers and extract metadata.
+discovery.docker "linux" {
+  host = "unix:///var/run/docker.sock"
+}
+
+// Define a relabeling rule to create a service name from the container name.
+discovery.relabel "parse_name" {
+      targets = []
+  
+      rule {
+          source_labels = ["__meta_docker_container_name"]
+          regex = "/(.*)"
+          target_label = "service_name"
+      }
+
+  }
+
+// Configure a loki.source.docker component to collect logs from Docker containers.
+loki.source.docker "default" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.docker.linux.targets
+  labels     = {"platform" = "docker"}
+  relabel_rules = discovery.relabel.parse_name.rules
+  forward_to = [loki.write.loki_db.receiver]
+}
+
+// Collect logs written to files
+local.file_match "file_logs" {
+    path_targets = [{"__path__" = "/pyflink_job_logs/*.log"}]
+}
+
+loki.source.file "loki_local_logs" {
+    targets    = local.file_match.file_logs.targets
+    forward_to = [loki.relabel.add_service_name.receiver]
+}
+
+loki.relabel "add_service_name" {
+  forward_to = [loki.write.loki_db.receiver]
+
+  rule {
+    target_label = "service_name"
+    replacement  = "pyflink_job"
+  }
+}
+
+loki.write "loki_db" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

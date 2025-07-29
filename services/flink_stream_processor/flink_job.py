@@ -1,7 +1,9 @@
 """Flink job for enriching the sensor data and creating metrics."""
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import json
 import time
+import sys
 from collections import defaultdict
 from pathlib import Path
 from pyflink.common import Configuration
@@ -33,12 +35,34 @@ LATE_DATA_TAG = OutputTag(
     )
 )
 
-logger = logging.getLogger("Flink job")
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
+# TODO
+# log setup cant be in the top-level code
+log_dir = Path(__file__).parent / "logs"
+log_dir.mkdir(parents=True, exist_ok=True)
+log_path = log_dir / "pyflink_job.log"
+
+formatter = logging.Formatter(
+    fmt="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
 )
+
+pyflink_handler = TimedRotatingFileHandler(
+    filename=log_path,
+    when="m",
+    interval=5,
+    backupCount=6
+)
+
+pyflink_handler.setFormatter(formatter)
+pyflink_logger = logging.getLogger("pyflink_logger")
+pyflink_logger.addHandler(pyflink_handler)
+pyflink_logger.setLevel(logging.INFO)
+
+taskmanager_handler = logging.StreamHandler(sys.stdout)
+taskmanager_handler.setLevel(logging.INFO)
+taskmanager_handler.setFormatter(formatter)
+
+taskmanager_logger = logging.getLogger("taskmanager_logger")
 
 class ParseAndFilter(ProcessFunction):
     """Parses the event and filter out if out of order. Yields Row objects."""
@@ -68,7 +92,7 @@ class ParseAndFilter(ProcessFunction):
                     )
                 
         except json.JSONDecodeError as e:
-            logger.error(f"An error occured when parsing an event ({event}): {e}")
+            taskmanager_logger.error(f"An error occured when parsing an event ({event}): {e}")
 
 # "State TTL is still not supported in PyFlink DataStream API." ~ Flink docs ;cccc
 # TODO
@@ -179,6 +203,7 @@ def main() -> None:
     config.set_string("python.fn-execution.bundle.time", "0")
     config.set_string("metrics.latency.interval", "2000")
     config.set_string("python.executable", "/usr/bin/python3.9")
+    pyflink_logger.info(f"Creating a stream execution environment.")
     env = StreamExecutionEnvironment.get_execution_environment(config)
     env.set_runtime_mode(RuntimeExecutionMode.STREAMING)
     env.set_parallelism(1)
@@ -189,7 +214,7 @@ def main() -> None:
     # kafka_jar = Path("/opt/flink") / flink_connector_name
     # prom_jar = Path("/opt/flink") / prom_metrics_name
     # env.add_jars(",".join([kafka_jar.as_uri(), prom_jar.as_uri()]))
-
+    pyflink_logger.info(f"Building a Kafka source.")
     source = KafkaSource.builder() \
         .set_starting_offsets(KafkaOffsetsInitializer.latest()) \
         .set_bootstrap_servers(KAFKA_BROKER) \
@@ -198,10 +223,12 @@ def main() -> None:
         .set_value_only_deserializer(SimpleStringSchema()) \
         .build()
     
+    pyflink_logger.info(f"Building a record serialized.")
     record_serializer = KafkaRecordSerializationSchema.builder() \
         .set_topic(OUT_TOPIC_NAME) \
         .set_value_serialization_schema(SimpleStringSchema()) \
         .build()
+    pyflink_logger.info(f"Building a Kafka sink.")
     sink = KafkaSink.builder() \
         .set_bootstrap_servers(KAFKA_BROKER) \
         .set_record_serializer(record_serializer) \
@@ -292,6 +319,7 @@ def main() -> None:
     # make kafka the sink for all outputs, develop a way of keeping track of the time taken for the processing
     late_on_time_metric.print()
     enriched_ds.print()
+    pyflink_logger.info(f"Executing the environment.")
     env.execute()
     
 

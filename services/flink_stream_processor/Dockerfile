@@ -107,8 +107,8 @@ RUN pip install -r requirements.txt
 COPY ./flink-metrics-prometheus-2.0.0.jar $FLINK_HOME/lib/flink-metrics-prometheus-2.0.0.jar
 
 COPY ./flink-sql-connector-kafka-4.0.0-2.0.jar $FLINK_HOME/lib/flink-sql-connector-kafka-4.0.0-2.0.jar
-
-COPY ./flink_job.py /opt/flink/flink_job.py
+# uncomment for production
+# COPY ./flink_job.py /opt/flink/flink_job.py
 
 COPY ./side_output_functions.py /opt/flink/side_output_functions.py
 
@@ -116,8 +116,5 @@ COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 6123 8081 9249
-
-# RUN echo "\nmetrics.reporters: prom" >> $FLINK_HOME/conf/config.yaml && \
-#     echo "metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter" >> $FLINK_HOME/conf/config.yaml
 
 RUN ln -sf /usr/bin/python3.9 /usr/bin/python

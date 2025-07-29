@@ -1,7 +1,7 @@
 """Test module for the fake data generator."""
 import pytest
 from unittest.mock import patch
-from data_generator.sailboat_data_simulator import Sailboat
+from data_generator.Sailboat import Sailboat
 
 @pytest.fixture
 def sailboat():

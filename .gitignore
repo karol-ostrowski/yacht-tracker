@@ -1,3 +1,6 @@
 .venv
 notatki.txt
 monitoring/prometheus/data/*
+logs/data_generator/*
+logs/flink/*
+logs/flink_job/*

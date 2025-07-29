@@ -1,16 +1,33 @@
 """A script for generating fake sensor data. For development purposes."""
+import logging.handlers
 from kafka import KafkaProducer
-from sailboat_data_simulator import Sailboat
+from Sailboat import Sailboat
 import logging
 import json
 import time
 import random
 import argparse
+from pathlib import Path
 
 KAFKA_BROKER = "localhost:29092"
 TOPIC_NAME = "raw_sensor_data"
 
-logger = logging.getLogger("Data generator")
+handler = logging.handlers.TimedRotatingFileHandler(
+    filename=Path(__file__).parent.parent / "logs" / "data_generator" / "data_generator.log",
+    when="m",
+    interval=5,
+    backupCount=6
+)
+
+formatter = logging.Formatter(
+    fmt="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+handler.setFormatter(formatter)
+
+logger = logging.getLogger("data_generator")
+logger.addHandler(handler)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
@@ -46,9 +63,9 @@ def generate_sailboats(num_of_sailboats: int = 1) -> list[Sailboat]:
     logger.info(f"Generated {num_of_sailboats} sailboats.")
     return sailboats
 
-def on_delivery_success(record_metadata):
+def on_delivery_success(record_metadata, message):
     """On delivery confirmation displays a logger info message."""
-    logger.info(f"Delivered a message to topic {record_metadata.topic}.")
+    logger.info(f"Delivered: id={message['id']} x={message['x']} y={message['y']} timestamp={message['timestamp']} topic={record_metadata.topic}")
 
 def on_delivery_failure(e):
     """On delivery failure displays a logger error message."""
@@ -87,7 +104,9 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
                 producer.send(
                     TOPIC_NAME,
                     value=message
-                ).add_callback(on_delivery_success).add_errback(on_delivery_failure)
+                ) \
+                .add_callback(lambda record_metadata: on_delivery_success(record_metadata, message)) \
+                .add_errback(on_delivery_failure)
                 # TODO
                 # make this waiting mechanism not stupid
                 time.sleep(random.uniform(0.1, 0.15))
