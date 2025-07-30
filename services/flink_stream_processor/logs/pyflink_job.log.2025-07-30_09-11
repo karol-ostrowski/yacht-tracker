@@ -1,0 +1,20 @@
+2025-07-30 09:09:06 [INFO] pyflink_logger - Creating a stream execution environment.
+2025-07-30 09:09:06 [INFO] pyflink_logger - Building a Kafka source.
+2025-07-30 09:09:06 [INFO] pyflink_logger - Building a record serialized.
+2025-07-30 09:09:06 [INFO] pyflink_logger - Building a Kafka sink.
+2025-07-30 09:09:07 [INFO] pyflink_logger - Executing the environment.
+2025-07-30 09:09:33 [INFO] pyflink_logger - Creating a stream execution environment.
+2025-07-30 09:09:33 [INFO] pyflink_logger - Building a Kafka source.
+2025-07-30 09:09:33 [INFO] pyflink_logger - Building a record serialized.
+2025-07-30 09:09:33 [INFO] pyflink_logger - Building a Kafka sink.
+2025-07-30 09:09:34 [INFO] pyflink_logger - Executing the environment.
+2025-07-30 09:10:02 [INFO] pyflink_logger - Creating a stream execution environment.
+2025-07-30 09:10:02 [INFO] pyflink_logger - Building a Kafka source.
+2025-07-30 09:10:02 [INFO] pyflink_logger - Building a record serialized.
+2025-07-30 09:10:02 [INFO] pyflink_logger - Building a Kafka sink.
+2025-07-30 09:10:03 [INFO] pyflink_logger - Executing the environment.
+2025-07-30 09:11:17 [INFO] pyflink_logger - Creating a stream execution environment.
+2025-07-30 09:11:17 [INFO] pyflink_logger - Building a Kafka source.
+2025-07-30 09:11:17 [INFO] pyflink_logger - Building a record serialized.
+2025-07-30 09:11:17 [INFO] pyflink_logger - Building a Kafka sink.
+2025-07-30 09:11:17 [INFO] pyflink_logger - Executing the environment.

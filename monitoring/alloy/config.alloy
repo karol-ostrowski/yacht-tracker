@@ -76,7 +76,7 @@ loki.source.docker "default" {
 
 // Collect logs written to files
 local.file_match "file_logs" {
-    path_targets = [{"__path__" = "/pyflink_job_logs/*.log"}]
+    path_targets = [{"__path__" = "/pyflink_job_logs/*.log*"}]
 }
 
 loki.source.file "loki_local_logs" {

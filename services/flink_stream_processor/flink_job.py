@@ -8,13 +8,13 @@ from collections import defaultdict
 from pathlib import Path
 from pyflink.common import Configuration
 from pyflink.common.serialization import SimpleStringSchema
-from pyflink.common.watermark_strategy import WatermarkStrategy, TimestampAssigner
+from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.common.typeinfo import Types
 from pyflink.datastream import StreamExecutionEnvironment, RuntimeExecutionMode
 from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer, KafkaSink, KafkaRecordSerializationSchema
 from pyflink.datastream import RuntimeContext, ProcessFunction, OutputTag
 from pyflink.datastream.state import ListStateDescriptor, ListState, Time
-from pyflink.datastream.functions import FlatMapFunction, AggregateFunction, CoMapFunction
+from pyflink.datastream.functions import FlatMapFunction, AggregateFunction, CoMapFunction, KeyedProcessFunction
 from pyflink.datastream.window import TumblingProcessingTimeWindows
 from pyflink.table import Row
 from side_output_functions import create_default_statistic
@@ -194,6 +194,56 @@ class CreateLateOnTimeStatistic(AggregateFunction):
             acc_a[key]["late"] += acc_b[key]["late"]
         return acc_a
 
+class OnTimeEventCounter(KeyedProcessFunction):
+    """Counts all on-time events and calculated their total time taken, counts on-time events by device ID.
+    Makes the metrics available for scraping at the /metrics endpoint."""
+    def __init__(self):
+        self.id_counters = {}
+        self.total_on_time_events_counter = None
+
+    def open(self, ctx):
+        self.metric_group = ctx.get_metrics_group()
+        self.total_on_time_events_counter = ctx \
+            .get_metrics_group() \
+            .counter("total_on_time_events")
+
+    def process_element(self, _, ctx):
+        key = ctx.get_current_key()
+        metric_name = f"on_time_device_{key}"
+        if key not in self.id_counters:
+            self.id_counters[key] = self.metric_group.counter(metric_name)
+        self.id_counters[key].inc()
+        self.total_on_time_events_counter.inc()
+
+class OnTimeTotalTimeCounter(ProcessFunction):
+    """Counts all on-time events and calculated their total time taken, counts on-time events by device ID.
+    Makes the metrics available for scraping at the /metrics endpoint."""
+    def __init__(self):
+        self.time_counter = None
+
+    def open(self, ctx):
+        self.time_counter = ctx \
+            .get_metrics_group() \
+            .counter("time_counter_ms")
+
+    def process_element(self, current_event, _):
+        self.time_counter.inc(current_event.time_taken*1000)
+
+class LateMetrics(KeyedProcessFunction):
+    """Counts late events by device ID and exposed them at the /metrics endpoint."""
+    def __init__(self):
+        self.id_counters = {}
+
+    def open(self, ctx):
+        self.metric_group = ctx.get_metrics_group()
+
+    def process_element(self, _, ctx):
+        key = ctx.get_current_key()
+        metric_name = f"late_device_{key}"
+        if key not in self.id_counters:
+            self.id_counters[key] = self.metric_group.counter(metric_name)
+        self.id_counters[key].inc()
+
 def main() -> None:
     """Holds main pipeline execution steps."""
     # TODO
@@ -260,6 +310,11 @@ def main() -> None:
             key_type=Types.INT()
         )
     
+    late_data_ds.process(
+        func=LateMetrics()
+    )
+
+    '''    
     aggregated_on_time_data_count = keyed_parsed_ds \
     .window(TumblingProcessingTimeWindows.of(size=Time.seconds(METRIC_AGGREGATION_WINDOW_SIZE))) \
     .aggregate(
@@ -305,19 +360,28 @@ def main() -> None:
             accumulator_type=Types.PICKLED_BYTE_ARRAY(),
             output_type=Types.STRING()
         )
+    '''
     
     enriched_ds = keyed_parsed_ds.flat_map(
             func=CalculateInstSpeed(),
             output_type=Types.ROW_NAMED(
                 ["id", "x", "y", "timestamp", "inst_speed", "time_taken"],
-                [Types.INT(), Types.FLOAT(), Types.FLOAT(), Types.DOUBLE(), Types.FLOAT(), Types.DOUBLE()]
+                [Types.INT(), Types.FLOAT(), Types.FLOAT(), Types.DOUBLE(), Types.FLOAT(), Types.FLOAT()]
             )
         )
+    
+    keyed_parsed_ds.process(
+        func=OnTimeEventCounter()
+    )
+
+    enriched_ds.process(
+        func=OnTimeTotalTimeCounter()
+    )
     # TODO
     # add time constrains for each metrics window
     # TODO
     # make kafka the sink for all outputs, develop a way of keeping track of the time taken for the processing
-    late_on_time_metric.print()
+    # late_on_time_metric.print()
     enriched_ds.print()
     pyflink_logger.info(f"Executing the environment.")
     env.execute()
