@@ -1,0 +1,364 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: flink
+      folder: flink
+      interval: 30s
+      rules:
+        - uid: bew3kihfdf85cb
+          title: Backpressure
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: P46B05499459EE360
+              model:
+                datasource:
+                    type: prometheus
+                    uid: P46B05499459EE360
+                editorMode: code
+                expr: flink_taskmanager_job_task_backPressuredTimeMsPerSecond
+                hide: false
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 500
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: 9f8add56-9865-4fc7-b669-0a3db14d8a8d
+          panelId: 1
+          noDataState: NoData
+          execErrState: Error
+          for: 30s
+          annotations:
+            __dashboardUid__: 9f8add56-9865-4fc7-b669-0a3db14d8a8d
+            __panelId__: "1"
+            summary: Backpressure greater than 500 ms was present for more than 30 seconds.
+          isPaused: false
+          notification_settings:
+            receiver: webhook_alert_receiver
+        - uid: cew3m1gv990jkf
+          title: High amount of late events
+          condition: J
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: P46B05499459EE360
+              model:
+                datasource:
+                    type: prometheus
+                    uid: P46B05499459EE360
+                editorMode: code
+                expr: |-
+                    sum((rate(flink_taskmanager_job_task_operator_late_device_1[1m])))
+                    /
+                    sum((rate(flink_taskmanager_job_task_operator_on_time_device_1[1m]) + 0.0000001))
+                hide: false
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: P46B05499459EE360
+              model:
+                datasource:
+                    type: prometheus
+                    uid: P46B05499459EE360
+                editorMode: code
+                expr: |-
+                    sum((rate(flink_taskmanager_job_task_operator_late_device_2[1m])))
+                    /
+                    sum((rate(flink_taskmanager_job_task_operator_on_time_device_2[1m]) + 0.0000001))
+                hide: false
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: B
+            - refId: D
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: P46B05499459EE360
+              model:
+                datasource:
+                    type: prometheus
+                    uid: P46B05499459EE360
+                editorMode: code
+                expr: |-
+                    sum((rate(flink_taskmanager_job_task_operator_late_device_3[1m])))
+                    /
+                    sum((rate(flink_taskmanager_job_task_operator_on_time_device_3[1m]) + 0.0000001))
+                hide: false
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: D
+            - refId: E
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: P46B05499459EE360
+              model:
+                datasource:
+                    type: prometheus
+                    uid: P46B05499459EE360
+                editorMode: code
+                expr: |-
+                    sum((rate(flink_taskmanager_job_task_operator_late_device_4[1m])))
+                    /
+                    sum((rate(flink_taskmanager_job_task_operator_on_time_device_4[1m]) + 0.0000001))
+                hide: false
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: E
+            - refId: F
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: P46B05499459EE360
+              model:
+                datasource:
+                    type: prometheus
+                    uid: P46B05499459EE360
+                editorMode: code
+                expr: |-
+                    sum((rate(flink_taskmanager_job_task_operator_late_device_5[1m])))
+                    /
+                    sum((rate(flink_taskmanager_job_task_operator_on_time_device_5[1m]) + 0.0000001))
+                hide: false
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: F
+            - refId: G
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: P46B05499459EE360
+              model:
+                datasource:
+                    type: prometheus
+                    uid: P46B05499459EE360
+                editorMode: code
+                expr: |-
+                    sum((rate(flink_taskmanager_job_task_operator_late_device_6[1m])))
+                    /
+                    sum((rate(flink_taskmanager_job_task_operator_on_time_device_6[1m]) + 0.0000001))
+                hide: false
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: G
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.25
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+            - refId: H
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.25
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: H
+                type: threshold
+            - refId: I
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.25
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: D
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: I
+                type: threshold
+            - refId: J
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.25
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: E
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: J
+                type: threshold
+            - refId: K
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.25
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: F
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: K
+                type: threshold
+            - refId: L
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.25
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: G
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: L
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 30s
+          annotations:
+            summary: Late to on-time event ratio has surpassed 0.25 for 30 seconds.
+          isPaused: false
+          notification_settings:
+            receiver: webhook_alert_receiver

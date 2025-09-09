@@ -37,7 +37,7 @@ LATE_DATA_TAG = OutputTag(
 
 # TODO
 # log setup cant be in the top-level code
-log_dir = Path(__file__).parent / "logs"
+log_dir = Path(__file__).parent / "flink_job_log"
 log_dir.mkdir(parents=True, exist_ok=True)
 log_path = log_dir / "pyflink_job.log"
 

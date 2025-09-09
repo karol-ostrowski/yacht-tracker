@@ -1,0 +1,9 @@
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: webhook_alert_receiver
+    receivers:
+      - uid: webhook_uid
+        type: webhook
+        settings:
+          url: https://webhook.site/5b6a456b-3c77-40a7-8ffe-a06c30df698c

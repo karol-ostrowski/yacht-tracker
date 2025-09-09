@@ -21,33 +21,15 @@ services:
     container_name: grafana
     ports:
      - 3000:3000
-    entrypoint:
-      - sh
-      - -euc
-      - |
-        mkdir -p /etc/grafana/provisioning/datasources
-        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
-        apiVersion: 1
-        datasources:
-        - name: loki
-          type: loki
-          access: proxy
-          orgId: 1
-          url: http://loki:3100
-          basicAuth: false
-          isDefault: false
-          version: 1
-          editable: false
-        - name: mimir
-          type: prometheus
-          orgId: 1
-          url: http://mimir:9009/prometheus
-          basicAuth: false
-          isDefault: true
-          version: 1
-          editable: false
-        EOF
-        /run.sh
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards/json:/etc/grafana/provisioning/dashboards/json
+      - ./grafana/alerting:/etc/grafana/provisioning/alerting
+    # environment settings added for the ease of use, not recommaneded in the production setting
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     networks:
       - regaty-network
 
@@ -66,7 +48,7 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
-      - ../services/flink_stream_processor/logs:/pyflink_job_logs
+      - ../logs:/logs
     command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
     privileged: true
     networks:

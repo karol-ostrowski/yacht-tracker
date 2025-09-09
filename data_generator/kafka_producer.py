@@ -93,7 +93,7 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
                 moving_sailboard = shuffled_sailboats.pop()
                 moving_sailboard.move()
                 timestamp = time.time()
-                if random.uniform(0, 1) > 0.50:
+                if random.uniform(0, 1) > 0.10:
                     timestamp -= 5
                 message = {
                     "id" : moving_sailboard.id,

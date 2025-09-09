@@ -76,20 +76,21 @@ loki.source.docker "default" {
 
 // Collect logs written to files
 local.file_match "file_logs" {
-    path_targets = [{"__path__" = "/pyflink_job_logs/*.log*"}]
+    path_targets = [{"__path__" = "/logs/*/*.log*"}]
 }
 
 loki.source.file "loki_local_logs" {
     targets    = local.file_match.file_logs.targets
-    forward_to = [loki.relabel.add_service_name.receiver]
+    forward_to = [loki.relabel.parse_service_name.receiver]
 }
 
-loki.relabel "add_service_name" {
+loki.relabel "parse_service_name" {
   forward_to = [loki.write.loki_db.receiver]
 
   rule {
+    source_labels = ["__path__"]
+    regex = "/logs/([^/]+)/.*"
     target_label = "service_name"
-    replacement  = "pyflink_job"
   }
 }
 

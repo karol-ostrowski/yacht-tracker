@@ -1,5 +1,0 @@
-2025-07-31 11:50:48 [INFO] pyflink_logger - Creating a stream execution environment.
-2025-07-31 11:50:48 [INFO] pyflink_logger - Building a Kafka source.
-2025-07-31 11:50:48 [INFO] pyflink_logger - Building a record serialized.
-2025-07-31 11:50:48 [INFO] pyflink_logger - Building a Kafka sink.
-2025-07-31 11:50:49 [INFO] pyflink_logger - Executing the environment.
