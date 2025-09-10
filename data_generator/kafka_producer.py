@@ -43,8 +43,7 @@ def create_producer() -> KafkaProducer:
         bootstrap_servers = [KAFKA_BROKER],
         value_serializer = lambda x : json.dumps(x).encode("utf-8")
     )
-    # TODO
-    # this logger info is not that useful, improve it
+
     logger.info(f"Connected a producer to {KAFKA_BROKER}")
     return producer
 
@@ -78,7 +77,7 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
     y-coordinate and current timestamp to the Kafka broker. 
     Randomly picks a Sailboat without returning, after moving
     all available Sailboats repopulates the list and cycles again.
-    Sends a message 20-100 times a second. Loops until stopped manually.
+    Sends a message multiple times a second. Loops until stopped manually.
 
     Args:
         producer (KafkaProducer): Kafka producer that should send the Sailboat data.
@@ -93,7 +92,7 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
                 moving_sailboard = shuffled_sailboats.pop()
                 moving_sailboard.move()
                 timestamp = time.time()
-                if random.uniform(0, 1) > 0.10:
+                if random.uniform(0, 1) < 0.05:
                     timestamp -= 5
                 message = {
                     "id" : moving_sailboard.id,
@@ -107,9 +106,7 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
                 ) \
                 .add_callback(lambda record_metadata: on_delivery_success(record_metadata, message)) \
                 .add_errback(on_delivery_failure)
-                # TODO
-                # make this waiting mechanism not stupid
-                time.sleep(random.uniform(0.1, 0.15))
+                time.sleep(random.uniform(0.5, 0.6) / num_of_sailboats)
     finally:
         logger.info("Flushing messages and closing the producer...")
         producer.flush()
