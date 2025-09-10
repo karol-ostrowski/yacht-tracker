@@ -58,12 +58,6 @@ pyflink_logger = logging.getLogger("pyflink_logger")
 pyflink_logger.addHandler(pyflink_handler)
 pyflink_logger.setLevel(logging.INFO)
 
-taskmanager_handler = logging.StreamHandler(sys.stdout)
-taskmanager_handler.setLevel(logging.INFO)
-taskmanager_handler.setFormatter(formatter)
-
-taskmanager_logger = logging.getLogger("taskmanager_logger")
-
 class ParseAndFilter(ProcessFunction):
     """Parses the event and filter out if out of order. Yields Row objects."""
     def __init__(self):
@@ -92,7 +86,7 @@ class ParseAndFilter(ProcessFunction):
                     )
                 
         except json.JSONDecodeError as e:
-            taskmanager_logger.error(f"An error occured when parsing an event ({event}): {e}")
+            pyflink_logger.error(f"An error occured when parsing an event ({event}): {e}")
 
 # "State TTL is still not supported in PyFlink DataStream API." ~ Flink docs ;cccc
 # TODO

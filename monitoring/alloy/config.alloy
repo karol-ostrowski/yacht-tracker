@@ -88,7 +88,7 @@ loki.relabel "parse_service_name" {
   forward_to = [loki.write.loki_db.receiver]
 
   rule {
-    source_labels = ["__path__"]
+    source_labels = ["filename"]
     regex = "/logs/([^/]+)/.*"
     target_label = "service_name"
   }

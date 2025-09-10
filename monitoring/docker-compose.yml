@@ -1,21 +1,5 @@
 services:
 
-  # prometheus:
-  #   image: prom/prometheus:v3.5.0-rc.0
-  #   container_name: prometheus
-  #   user: root
-  #   ports:
-  #     - 9090:9090
-  #   volumes:
-  #     - ./prometheus/prometheus.yml:/prometheus.yml
-  #     - ./prometheus/data:/prometheus
-  #   command:
-  #     - "--config.file=/prometheus.yml"
-  #     - "--storage.tsdb.path=/prometheus"
-  #     - "--storage.tsdb.retention.time=2d"
-  #   networks:
-  #     - regaty-network
-
   grafana:
     image: grafana/grafana:12.0.2
     container_name: grafana
@@ -64,8 +48,6 @@ services:
     command:
       - "--config.file=/etc/mimir/mimir.yaml"
     restart: unless-stopped
-    # depends_on:
-    #   - prometheus
     networks:
       - regaty-network
 
@@ -98,8 +80,6 @@ services:
       - "--path.sysfs=/host/sys"
       - "--path.rootfs=/rootfs"
     restart: unless-stopped
-    # depends_on:
-    #   - prometheus
     networks:
       - regaty-network
 

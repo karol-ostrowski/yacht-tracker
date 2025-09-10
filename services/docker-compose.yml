@@ -11,6 +11,10 @@ services:
     volumes:
       - ./flink_stream_processor/flink_job.py:/opt/flink/flink_job.py
       - ../logs/flink:/opt/flink/logs
+      - ../logs/flink_job:/opt/flink/flink_job_log
+      - ../logs/flink:/opt/flink/log
+
+
     environment:
     - |
       FLINK_PROPERTIES=
@@ -26,9 +30,6 @@ services:
     ports:
       - "9250:9249"
     command: taskmanager
-    volumes:
-      - ../logs/flink:/opt/flink/log
-      - ../logs/flink_job:/opt/flink/flink_job_log
     environment:
     - |
       FLINK_PROPERTIES=
