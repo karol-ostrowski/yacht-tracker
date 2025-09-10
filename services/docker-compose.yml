@@ -10,6 +10,11 @@ services:
     command: jobmanager
     volumes:
       - ./flink_stream_processor/flink_job.py:/opt/flink/flink_job.py
+      - ./flink_stream_processor/config.py:/opt/flink/config.py
+      - ./flink_stream_processor/__init__.py:/opt/flink/__init__.py
+      - ./flink_stream_processor/logging_setup.py:/opt/flink/logging_setup.py
+      - ./flink_stream_processor/transformations.py:/opt/flink/transformations.py
+      - ./flink_stream_processor/utils.py:/opt/flink/utils.py
       - ../logs/flink:/opt/flink/logs
       - ../logs/flink_job:/opt/flink/flink_job_log
       - ../logs/flink:/opt/flink/log
@@ -30,6 +35,13 @@ services:
     ports:
       - "9250:9249"
     command: taskmanager
+    volumes:
+      - ./flink_stream_processor/flink_job.py:/opt/flink/flink_job.py
+      - ./flink_stream_processor/config.py:/opt/flink/config.py
+      - ./flink_stream_processor/__init__.py:/opt/flink/__init__.py
+      - ./flink_stream_processor/logging_setup.py:/opt/flink/logging_setup.py
+      - ./flink_stream_processor/transformations.py:/opt/flink/transformations.py
+      - ./flink_stream_processor/utils.py:/opt/flink/utils.py
     environment:
     - |
       FLINK_PROPERTIES=
