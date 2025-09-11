@@ -823,7 +823,7 @@
         "type": "prometheus",
         "uid": "P46B05499459EE360"
       },
-      "description": "Non 0 values mean Flink can't keep up with processing events as the come.",
+      "description": "Non 0 values mean Flink can't push records downstream.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -835,7 +835,7 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "axisSoftMax": 10000,
+            "axisSoftMax": 1000,
             "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
