@@ -81,14 +81,14 @@
             "uid": "P46B05499459EE360"
           },
           "editorMode": "code",
-          "expr": "sum(flink_taskmanager_job_task_numRecordsInPerSecond)",
+          "expr": "sum(flink_taskmanager_job_task_numRecordsInPerSecond{task_name=\"Source:_raw_data_source____PROCESS______stream_key_by_map_operator__Map___stream_key_by_map_operator_\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Flink records in",
+      "title": "Flink events in",
       "type": "stat"
     },
     {
@@ -151,14 +151,14 @@
             "uid": "P46B05499459EE360"
           },
           "editorMode": "code",
-          "expr": "sum(flink_taskmanager_job_task_numRecordsOutPerSecond)",
+          "expr": "sum(flink_taskmanager_job_task_numRecordsOutPerSecond{task_name=\"FlatMap_____PROCESS__Sink:_Writer____Sink:_Committer_\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Flink records out",
+      "title": "Flink events out",
       "type": "stat"
     },
     {
@@ -1040,7 +1040,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(flink_taskmanager_job_task_operator_time_counter_ms[5m])",
+          "expr": "rate(flink_taskmanager_job_task_operator_time_counter_ms[5m])\n/\non(job, operator)\n(rate(flink_taskmanager_job_task_operator_total_on_time_events[5m]) + 0.00001)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -1065,5 +1065,5 @@
   "timezone": "browser",
   "title": "Yacht tracker monitoring",
   "uid": "9f8add56-9865-4fc7-b669-0a3db14d8a8d",
-  "version": 2
+  "version": 1
 }
