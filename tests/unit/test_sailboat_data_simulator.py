@@ -27,7 +27,7 @@ def test_sailboat_move(sailboat):
     assert sailboat.y != init_y
 
 @patch("random.uniform", return_value=0.9)
-def test_sailboat_speedup(sailboat):
+def test_sailboat_speedup(_, sailboat):
     """Check if move() method can successfully change the speed."""
     sailboat.horizontal_speed = 0.5
     init_speed = sailboat.horizontal_speed
