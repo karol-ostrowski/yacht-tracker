@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# TODO
-# if not exist create logs directory and log file for the pyflink job
-
 docker-compose up -d
 
 echo "Waiting for JobManager to be ready..."

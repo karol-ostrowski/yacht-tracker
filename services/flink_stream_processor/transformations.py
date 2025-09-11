@@ -110,19 +110,21 @@ class OnTimeEventCounter(KeyedProcessFunction):
         self.id_counters[key].inc()
         self.total_on_time_events_counter.inc()
 
-class OnTimeTotalTimeCounter(ProcessFunction):
-    """Counts all on-time events and calculated their total time taken, counts on-time events by device ID.
+class OnTimeTotalTimeAndEventCounter(ProcessFunction):
+    """Counts all on-time events and calculates their total time taken, counts on-time events by device ID.
     Makes the metrics available for scraping at the /metrics endpoint."""
     def __init__(self):
         self.time_counter = None
+        self.event_counter = None
 
     def open(self, ctx):
-        self.time_counter = ctx \
-            .get_metrics_group() \
-            .counter("time_counter_ms")
+        metrics_group = ctx.get_metrics_group()
+        self.time_counter = metrics_group.counter("time_counter_ms")
+        self.event_counter = metrics_group.counter("on_time_event_counter")
 
     def process_element(self, current_event, _):
         self.time_counter.inc(current_event.time_taken*1000)
+        self.event_counter.inc()
 
 class LateMetrics(KeyedProcessFunction):
     """Counts late events by device ID and exposed them at the /metrics endpoint."""

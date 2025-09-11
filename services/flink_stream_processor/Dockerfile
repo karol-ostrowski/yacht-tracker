@@ -106,13 +106,14 @@ RUN pip install -r requirements.txt
 
 COPY ./flink-metrics-prometheus-2.0.0.jar $FLINK_HOME/lib/flink-metrics-prometheus-2.0.0.jar
 
-COPY ./flink-sql-connector-kafka-4.0.0-2.0.jar $FLINK_HOME/lib/flink-sql-connector-kafka-4.0.0-2.0.jar
+COPY ./kafka-clients-4.0.0.jar $FLINK_HOME/lib/kafka-clients-4.0.0.jar
+
+COPY ./flink-connector-kafka-4.0.0-2.0.jar $FLINK_HOME/lib/flink-connector-kafka-4.0.0-2.0.jar
 # uncomment for production
 # COPY ./flink_job.py /opt/flink/flink_job.py
 
-COPY ./side_output_functions.py /opt/flink/side_output_functions.py
-
 COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 6123 8081 9249
