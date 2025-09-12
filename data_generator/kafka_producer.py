@@ -9,11 +9,14 @@ import random
 import argparse
 from pathlib import Path
 
-KAFKA_BROKER = "localhost:29092"
+KAFKA_BROKER = "broker:9092"
 TOPIC_NAME = "raw_sensor_data"
 
+log_path = Path("/logs")
+log_path.mkdir(exist_ok=True)
+
 handler = logging.handlers.TimedRotatingFileHandler(
-    filename=Path(__file__).parent.parent / "logs" / "data_generator" / "data_generator.log",
+    filename=Path(log_path / "data_generator.log"),
     when="m",
     interval=5,
     backupCount=6
