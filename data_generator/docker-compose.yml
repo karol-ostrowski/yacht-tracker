@@ -1,0 +1,16 @@
+services:
+
+  data-generator:
+    build:
+      context: .
+    container_name: data-generator
+    volumes:
+      - ../logs/data_generator:/logs
+    networks:
+      - regaty-network
+
+networks:
+
+  regaty-network:
+    external: true
+    name: regaty-network
