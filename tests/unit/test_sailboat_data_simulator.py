@@ -34,14 +34,16 @@ def test_sailboat_speedup(_, sailboat):
     sailboat.move()
     assert sailboat.horizontal_speed != init_speed
 
-def test_horizontal_boundary_direction_change(sailboat):
+@patch("random.uniform", return_value=0.5)
+def test_horizontal_boundary_direction_change(_, sailboat):
     """Check if the sailboat correctly changes the direction upon reaching the horizontal boundary."""
     sailboat.x = 949.9
     sailboat.horizontal_speed = 0.7
     sailboat.move()
     assert sailboat.horizontal_speed == -0.7
     
-def test_vertical_boundary_direction_change(sailboat):
+@patch("random.uniform", return_value=0.5)
+def test_vertical_boundary_direction_change(_, sailboat):
     """Check if the sailboat correctly changes the direction upon reaching the vertical boundary."""
     sailboat.y = 949.9
     sailboat.vertical_speed = 0.7
