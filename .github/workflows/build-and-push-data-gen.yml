@@ -35,6 +35,6 @@ jobs:
         with:
           context: ./data_generator/
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/${{ github.repository }}/data_generator:${{ github.event.inputs.tag || 'latest' }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/data-generator:cache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/data-generator:cache,mode=max
