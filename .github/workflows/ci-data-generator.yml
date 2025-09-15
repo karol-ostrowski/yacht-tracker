@@ -9,7 +9,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/karol-ostrowski/yacht-tracker/data-generator:cache
+      image: ghcr.io/karol-ostrowski/yacht-tracker/data-generator:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
