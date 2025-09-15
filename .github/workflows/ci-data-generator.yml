@@ -15,6 +15,11 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     
     steps:
-      - uses: actions/checkout@v5
+      - name: checkout code
+        uses: actions/checkout@v5
+
+      - name: download pytest
+        run: pip install pytest==8.4.1
+
       - name: run tests
         run: pytest tests/unit/data_generator
