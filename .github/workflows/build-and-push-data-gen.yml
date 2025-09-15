@@ -1,0 +1,44 @@
+name: build & push data generator image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Optional tag for the image'
+        default: 'latest'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/data-generator
+          tags: |
+            type=ref,event=manual
+            custom=${{ github.event.inputs.tag }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./data_generator/
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/my-app:cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/my-app:cache,mode=max
