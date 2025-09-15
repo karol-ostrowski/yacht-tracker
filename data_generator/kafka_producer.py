@@ -1,7 +1,7 @@
 """A script for generating fake sensor data. For development purposes."""
 import logging.handlers
 from kafka import KafkaProducer
-from Sailboat import Sailboat
+from data_generator.Sailboat import Sailboat
 import logging
 import json
 import time
@@ -104,7 +104,7 @@ def produce_data(producer: KafkaProducer, num_of_sailboats: int = 1) -> None:
                     "timestamp" : timestamp,
                 }
                 producer.send(
-                    TOPIC_NAME,
+                    topic=TOPIC_NAME,
                     value=message
                 ) \
                 .add_callback(lambda record_metadata: on_delivery_success(record_metadata, message)) \
