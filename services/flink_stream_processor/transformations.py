@@ -5,8 +5,14 @@ from pyflink.table import Row
 from pyflink.datastream import RuntimeContext, ProcessFunction
 from pyflink.datastream.state import ListStateDescriptor, ListState
 from pyflink.datastream.functions import FlatMapFunction, KeyedProcessFunction
-from logging_setup import logger
-from utils import LATE_DATA_TAG
+try:
+    from .logging_setup import logger
+except ImportError:
+    from logging_setup import logger
+try:
+    from .utils import LATE_DATA_TAG
+except ImportError:
+    from utils import LATE_DATA_TAG
 
 class ParseAndFilter(ProcessFunction):
     """Parses the event and filter out if out of order. Yields Row objects."""
@@ -90,7 +96,7 @@ class CalculateInstSpeed(FlatMapFunction):
             self.list_state.add(current_event)
 
 class OnTimeEventCounter(KeyedProcessFunction):
-    """Counts all on-time events and calculated their total time taken, counts on-time events by device ID.
+    """Counts all on-time events and calculates their total time taken, counts on-time events by device ID.
     Makes the metrics available for scraping at the /metrics endpoint."""
     def __init__(self):
         self.id_counters = {}
@@ -110,29 +116,30 @@ class OnTimeEventCounter(KeyedProcessFunction):
         self.id_counters[key].inc()
         self.total_on_time_events_counter.inc()
 
-class OnTimeTotalTimeAndEventCounter(ProcessFunction):
-    """Counts all on-time events and calculates their total time taken, counts on-time events by device ID.
+class OnTimeTotalTimeCounter(ProcessFunction):
+    """Calculates total time taken of on-time events.
     Makes the metrics available for scraping at the /metrics endpoint."""
     def __init__(self):
         self.time_counter = None
-        self.event_counter = None
 
     def open(self, ctx):
         metrics_group = ctx.get_metrics_group()
         self.time_counter = metrics_group.counter("time_counter_ms")
-        self.event_counter = metrics_group.counter("on_time_event_counter")
 
     def process_element(self, current_event, _):
         self.time_counter.inc(current_event.time_taken*1000)
-        self.event_counter.inc()
 
 class LateMetrics(KeyedProcessFunction):
-    """Counts late events by device ID and exposed them at the /metrics endpoint."""
+    """Counts late events by device ID and exposes them at the /metrics endpoint."""
     def __init__(self):
         self.id_counters = {}
+        self.total_late_events_counter = None
 
     def open(self, ctx):
         self.metric_group = ctx.get_metrics_group()
+        self.total_late_events_counter = ctx \
+            .get_metrics_group() \
+            .counter("total_late_events")
 
     def process_element(self, _, ctx):
         key = ctx.get_current_key()
@@ -140,3 +147,4 @@ class LateMetrics(KeyedProcessFunction):
         if key not in self.id_counters:
             self.id_counters[key] = self.metric_group.counter(metric_name)
         self.id_counters[key].inc()
+        self.total_late_events_counter.inc()
