@@ -30,8 +30,8 @@ def mock_sailboat():
     return sailboat
 
 @patch('data_generator.kafka_producer.KafkaProducer')
-def test_create_producer_success(mock_kafka_producer):
-    """Test successful creation of Kafka producer."""
+def test_create_producer(mock_kafka_producer):
+    """Test successful creation of a Kafka producer."""
     mock_producer_instance = Mock()
     mock_kafka_producer.return_value = mock_producer_instance
 
@@ -48,22 +48,23 @@ def test_create_producer_success(mock_kafka_producer):
 @patch('data_generator.kafka_producer.Sailboat')
 def test_generate_sailboats(mock_sailboat_class):
     """Test generating given number of sailboats."""
-    
+    mock_sailboat_class.return_value = "Sailboat"
     num_of_boats = 10
 
     result = generate_sailboats(num_of_sailboats=num_of_boats)
 
     assert len(result) == num_of_boats
-    assert isinstance(result[num_of_boats // 2], Mock)
+    assert result[num_of_boats // 2] == mock_sailboat_class.return_value
 
 @patch('data_generator.kafka_producer.Sailboat')
 def test_generate_sailboats_default_value(mock_sailboat_class):
     """Test generating default number of sailboats."""
+    mock_sailboat_class.return_value = "Sailboat"
 
     result = generate_sailboats()
 
     assert len(result) == 1
-    assert isinstance(result[0], Mock)
+    assert result[0] == mock_sailboat_class.return_value
 
 @patch('time.sleep')
 @patch('time.time')
@@ -112,7 +113,7 @@ def test_produce_data_delayed(mock_generate_sailboats,
                               mock_sleep,
                               mock_sailboat,
                               mock_producer):
-    """Test produce_data function for a single iteration."""
+    """Test production of a late event."""
 
     mock_generate_sailboats.return_value = [mock_sailboat]
     mock_time.return_value = 1234567890.0
