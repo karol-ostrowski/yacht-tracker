@@ -1,4 +1,4 @@
-name: ci-data-generator
+name: ci-pyflink
 
 on:
   push:
