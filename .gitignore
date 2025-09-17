@@ -1,4 +1,5 @@
 .venv
+.test-venv
 notatki.txt
 monitoring/prometheus/data/*
 logs/data_generator/*
