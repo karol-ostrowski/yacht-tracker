@@ -1,5 +1,8 @@
-from unittest.mock import patch
+"""Test module for the custom pyflink transformations and metrics."""
+from unittest.mock import Mock, MagicMock, patch
+from types import ModuleType
 import json
+import sys
 import pytest
 
 class MockRow:
@@ -32,8 +35,8 @@ class MockListState():
         self.values = items
 
 class MockCtx():
-    """Replacement for the transformation context."""
-    def __init__(self, key: int):
+    """Replacement for the runtime context."""
+    def __init__(self, key: int = 0):
         self.key = key
     
     def get_current_key(self) -> int:
@@ -48,27 +51,42 @@ class MockCounter():
         self.count += inc
 
 class MockMetricGroup():
-    """Replacement for a method of the transformation context."""
+    """Replacement for a method of the runtime context."""
     def counter(self, _: str) -> MockCounter:
         return MockCounter()
+    
+class MockOutputTag():
+    """Replacement for OutputTag"""
+    def __repr__(self):
+        return "OutputTag"
+    
+datastream = ModuleType("pyflink.datastream")
+datastream.ProcessFunction = MockProcessFunction
+datastream.RuntimeContext = MockCtx
+datastream.OutputTag = Mock(return_value="OutputTag")
 
-with patch('services.flink_stream_processor.logging_setup.logger') as mock_logger, \
-     patch('pyflink.common.typeinfo.Types') as mock_types, \
-     patch('pyflink.table.Row', side_effect=lambda **kwargs: MockRow(**kwargs)) as mock_row, \
-     patch('pyflink.datastream.RuntimeContext') as mock_ctx, \
-     patch('pyflink.datastream.ProcessFunction', MockProcessFunction), \
-     patch('pyflink.datastream.state.ListStateDescriptor') as mock_list_state_descriptor, \
-     patch('pyflink.datastream.state.ListState') as mock_list_state, \
-     patch('pyflink.datastream.functions.FlatMapFunction', MockFlatMapFunction), \
-     patch('pyflink.datastream.functions.KeyedProcessFunction', MockKeyedProcessFunction), \
-     patch('pyflink.datastream.OutputTag', return_value="OutputTag") as mock_output_tag:
-    from services.flink_stream_processor.transformations import (
-        CalculateInstSpeed,
-        LateMetrics,
-        ParseAndFilter,
-        OnTimeEventCounter,
-        OnTimeTotalTimeCounter
-    )
+table = ModuleType("pyflink.table")
+table.Row = MockRow
+
+functions = ModuleType("pyflink.functions")
+functions.FlatMapFunction = MockFlatMapFunction
+functions.KeyedProcessFunction = MockKeyedProcessFunction
+
+sys.modules['pyflink'] = MagicMock()
+sys.modules['pyflink.common'] = MagicMock()
+sys.modules['pyflink.common.typeinfo'] = MagicMock()
+sys.modules['pyflink.table'] = table
+sys.modules['pyflink.datastream'] = datastream
+sys.modules['pyflink.datastream.state'] = MagicMock()
+sys.modules['pyflink.datastream.functions'] = functions
+
+from services.flink_stream_processor.transformations import (
+    CalculateInstSpeed,
+    LateMetrics,
+    ParseAndFilter,
+    OnTimeEventCounter,
+    OnTimeTotalTimeCounter
+)
 
 @pytest.fixture
 def mock_message():
