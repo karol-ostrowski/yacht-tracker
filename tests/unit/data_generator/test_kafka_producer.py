@@ -1,24 +1,29 @@
-"""Tests for the data generator script."""
+"""Test module for the data generator script."""
 import pytest
 import json
-from unittest.mock import Mock, patch
-with patch("pathlib.Path.mkdir") as mock_mkdir, \
-     patch("logging.handlers.TimedRotatingFileHandler") as mock_handler:
-    from data_generator.kafka_producer import (
-        create_producer, 
-        generate_sailboats, 
-        produce_data
-    )
+import sys
+from unittest.mock import Mock, patch, MagicMock
+from types import ModuleType
 
-@pytest.fixture
-def mock_producer():
-    """Mock Kafka producer fixture."""
-    producer = Mock()
-    future = Mock()
-    producer.send.return_value = future
-    future.add_callback.return_value = future
-    future.add_errback.return_value = future
-    return producer
+class MockKafkaProducer():
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+kafka = ModuleType("kafka")
+kafka.KafkaProducer = MockKafkaProducer
+
+sys.modules["pathlib"] = MagicMock()
+sys.modules["logging"] = MagicMock()
+sys.modules["logging.handlers"] = MagicMock()
+sys.modules["kafka"] = kafka
+
+from data_generator.kafka_producer import (
+    create_producer, 
+    generate_sailboats, 
+    produce_data
+)
+
 
 @pytest.fixture
 def mock_sailboat():
@@ -29,26 +34,21 @@ def mock_sailboat():
     sailboat.y = 33.3
     return sailboat
 
-@patch('data_generator.kafka_producer.KafkaProducer')
-def test_create_producer(mock_kafka_producer):
+
+def test_create_producer():
     """Test successful creation of a Kafka producer."""
-    mock_producer_instance = Mock()
-    mock_kafka_producer.return_value = mock_producer_instance
-
     result = create_producer()
+    assert result.__dict__["bootstrap_servers"] == ["broker:9092"]
 
-    called_kwargs = mock_kafka_producer.call_args[1]
-    assert called_kwargs["bootstrap_servers"] == ["broker:9092"]
-
-    serializer = called_kwargs["value_serializer"]
+    serializer = result.__dict__["value_serializer"]
     assert serializer({"k": "v"}) == json.dumps({"k": "v"}).encode("utf-8")
 
-    assert result is mock_producer_instance
 
 @patch('data_generator.kafka_producer.Sailboat')
-def test_generate_sailboats(mock_sailboat_class):
+def test_generate_sailboats(mock_sailboat_class,
+                            mock_sailboat):
     """Test generating given number of sailboats."""
-    mock_sailboat_class.return_value = "Sailboat"
+    mock_sailboat_class.return_value = mock_sailboat
     num_of_boats = 10
 
     result = generate_sailboats(num_of_sailboats=num_of_boats)
@@ -56,15 +56,18 @@ def test_generate_sailboats(mock_sailboat_class):
     assert len(result) == num_of_boats
     assert result[num_of_boats // 2] == mock_sailboat_class.return_value
 
+
 @patch('data_generator.kafka_producer.Sailboat')
-def test_generate_sailboats_default_value(mock_sailboat_class):
+def test_generate_sailboats_default_value(mock_sailboat_class,
+                                          mock_sailboat):
     """Test generating default number of sailboats."""
-    mock_sailboat_class.return_value = "Sailboat"
+    mock_sailboat_class.return_value = mock_sailboat
 
     result = generate_sailboats()
 
     assert len(result) == 1
     assert result[0] == mock_sailboat_class.return_value
+
 
 @patch('time.sleep')
 @patch('time.time')
@@ -74,17 +77,17 @@ def test_produce_data(mock_generate_sailboats,
                       mock_uniform,
                       mock_time,
                       mock_sleep,
-                      mock_sailboat,
-                      mock_producer):
+                      mock_sailboat):
     """Test produce_data function for a single iteration."""
 
     mock_generate_sailboats.return_value = [mock_sailboat]
     mock_time.return_value = 1234567890.0
     mock_uniform.side_effect = [0.1, 0.55]
+    mock_producer = Mock()
     
     # break the loop after one iteration
     iteration_count = 0
-    def side_effect_sleep(*args, **kwargs):
+    def side_effect_sleep(_):
         nonlocal iteration_count
         iteration_count += 1
         if iteration_count >= 1:
@@ -93,35 +96,37 @@ def test_produce_data(mock_generate_sailboats,
     mock_sleep.side_effect = side_effect_sleep
     
     with pytest.raises(KeyboardInterrupt):
-        produce_data(mock_producer, 1)
+        produce_data(mock_producer, len(mock_generate_sailboats.return_value))
     
     call_args = mock_producer.send.call_args
     assert call_args[1]["topic"] == "raw_sensor_data"
+
     message = call_args[1]["value"]
     assert message["id"] == 1
     assert message["x"] == 22.2
     assert message["y"] == 33.3
     assert message["timestamp"] == 1234567890.0
 
+
 @patch('time.sleep')
 @patch('time.time')
 @patch('random.uniform')
 @patch('data_generator.kafka_producer.generate_sailboats')
-def test_produce_data_delayed(mock_generate_sailboats,
-                              mock_uniform,
-                              mock_time,
-                              mock_sleep,
-                              mock_sailboat,
-                              mock_producer):
-    """Test production of a late event."""
+def test_produce_data_produce_late_event(mock_generate_sailboats,
+                      mock_uniform,
+                      mock_time,
+                      mock_sleep,
+                      mock_sailboat):
+    """Test producing a late event."""
 
     mock_generate_sailboats.return_value = [mock_sailboat]
     mock_time.return_value = 1234567890.0
     mock_uniform.side_effect = [0.01, 0.55]
+    mock_producer = Mock()
     
     # break the loop after one iteration
     iteration_count = 0
-    def side_effect_sleep(*args, **kwargs):
+    def side_effect_sleep(_):
         nonlocal iteration_count
         iteration_count += 1
         if iteration_count >= 1:
@@ -130,7 +135,10 @@ def test_produce_data_delayed(mock_generate_sailboats,
     mock_sleep.side_effect = side_effect_sleep
     
     with pytest.raises(KeyboardInterrupt):
-        produce_data(mock_producer, 1)
+        produce_data(mock_producer, len(mock_generate_sailboats.return_value))
+    
+    call_args = mock_producer.send.call_args
+    assert call_args[1]["topic"] == "raw_sensor_data"
     
     call_args = mock_producer.send.call_args
     assert call_args[1]["topic"] == "raw_sensor_data"
