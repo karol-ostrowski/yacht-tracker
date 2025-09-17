@@ -2,7 +2,7 @@
 from pyflink.common.typeinfo import Types
 from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.common.typeinfo import Types
-from transformations import ParseAndFilter, LateMetrics, CalculateInstSpeed, OnTimeEventCounter, OnTimeTotalTimeAndEventCounter
+from transformations import ParseAndFilter, LateMetrics, CalculateInstSpeed, OnTimeEventCounter, OnTimeTotalTimeCounter
 from pyflink.common.serialization import SimpleStringSchema
 from pyflink.common.typeinfo import Types
 from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer, KafkaSink, KafkaRecordSerializationSchema
@@ -101,7 +101,7 @@ def main() -> None:
     )
 
     enriched_ds.process(
-        func=OnTimeTotalTimeAndEventCounter()
+        func=OnTimeTotalTimeCounter()
     )
 
     enriched_ds.sink_to(kafka_sink)
