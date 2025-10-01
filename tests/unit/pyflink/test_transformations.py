@@ -129,7 +129,7 @@ def test_CalculateInstSpeed(mock_time):
     result = next(transformation.flat_map(event))
     
     assert isinstance(result, MockRow)
-    assert result.inst_speed == 1
+    assert result.inst_speed == 111320
     assert result.time_taken == mock_time.return_value - event.timestamp
 
 def test_OnTimeEventCounter():

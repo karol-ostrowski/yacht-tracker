@@ -1,0 +1,17 @@
+services:
+
+  flask:
+    build:
+      context: .
+    container_name: flask
+    volumes:
+      - .:/opt/flask
+    ports:
+      - 5001:5000
+    networks:
+      - regaty-network
+
+networks:
+  regaty-network:
+    external: true
+    name: regaty-network
