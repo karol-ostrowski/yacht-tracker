@@ -16,7 +16,6 @@ services:
     networks:
       - regaty-network
 
-
   broker:
     image: apache/kafka:4.0.0
     container_name: broker
@@ -55,7 +54,6 @@ services:
     networks:
       - regaty-network
 
-  
 volumes:
   tsdb-regaty:
 

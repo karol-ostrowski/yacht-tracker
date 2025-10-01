@@ -45,8 +45,6 @@ class ParseAndFilter(ProcessFunction):
             logger.error(f"An error occured when parsing an event ({event}): {e}")
 
 # "State TTL is still not supported in PyFlink DataStream API." ~ Flink docs ;cccc
-# TODO
-# replace current ttl mechanism with redis
 class CalculateInstSpeed(FlatMapFunction):
     """Yields Row a object with added value of the instantaneous speed calculated
     using distance/time_diff formula based on the current event and the least recent
