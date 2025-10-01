@@ -77,7 +77,7 @@ class CalculateInstSpeed(FlatMapFunction):
             if time_diff >= 1:
                 distance = ((current_event.x - oldest_available_event.x) ** 2 \
                          +  (current_event.y - oldest_available_event.y) ** 2) ** 0.5
-                speed = distance / time_diff
+                speed = distance * 111320 / time_diff
                 queue.append(current_event)
                 self.list_state.update(queue)
                 yield Row(

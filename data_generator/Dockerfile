@@ -2,10 +2,14 @@ FROM python:3.9.22-alpine3.22
 
 RUN pip install kafka-python==2.2.13
 
-COPY ./kafka_producer.py /
+WORKDIR /opt/data_generator
 
-COPY ./Sailboat.py /
+COPY ./kafka_producer.py /opt/data_generator
 
-COPY ./__init__.py /
+COPY ./Sailboat.py /opt/data_generator
 
-CMD ["python3.9", "kafka_producer.py", "-S", "6"]
+COPY ./__init__.py /opt/data_generator
+
+ENV PYTHONPATH=/opt
+
+CMD ["python3.9", "-m", "data_generator.kafka_producer", "-S", "6"]
