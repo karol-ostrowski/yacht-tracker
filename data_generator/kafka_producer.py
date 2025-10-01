@@ -1,4 +1,4 @@
-"""A script for generating fake sensor data. For development purposes."""
+"""A script for generating fake sensor data."""
 import logging.handlers
 from kafka import KafkaProducer
 from data_generator.Sailboat import Sailboat
@@ -40,7 +40,7 @@ def create_producer() -> KafkaProducer:
     """Creates a Kafka producer.
     
     Returns:
-        KafkaProducer: a Kafka producer connected to a broker specified in a global variable.
+        producer (KafkaProducer): a Kafka producer connected to a broker specified in a global variable.
     """
     producer = KafkaProducer(
         bootstrap_servers = [KAFKA_BROKER],
@@ -57,7 +57,7 @@ def generate_sailboats(num_of_sailboats: int = 1) -> list[Sailboat]:
         num_of_sailboats (int): Number of sailboats to be generated, defaults to 1.
 
     Returns:
-        list[Sailboat]: List of Sailboat objects.
+        sailboats (list[Sailboat]): List of Sailboat objects.
     """
     sailboats = []
     for i in range(num_of_sailboats):
