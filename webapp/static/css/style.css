@@ -1,0 +1,94 @@
+:root {
+    --primary-color: #255cca;
+    --secondary-color: #255cca;
+    --background-color: #ffffff;
+}
+
+.modak-regular {
+    font-family: "Modak", system-ui;
+    font-weight: 300;
+    font-style: normal;
+}
+
+
+body {
+    background-color: var(--primary-color);
+    font-family: sans-serif;
+    margin: 0;
+}
+
+.navbar {
+    position: relative;
+    background-color: var(--primary-color);
+    top: -40px;
+    z-index: 1000;
+}
+
+.wave-divider path {
+    fill: var(--primary-color);
+}
+
+.wave-divider svg {
+    position: relative;
+    width: 100%;
+    display: block;
+    top: -40px;
+    z-index: 100;
+}
+
+.brand {
+   position: relative;
+   top: 40px;
+   color: white;
+   font-weight: 100;
+   text-align: center;
+   font-size: 60px;
+   padding-top: 7px;
+   z-index: 10000;
+}
+
+.pill {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    font-family: "Modak", system-ui;
+    font-size: 50px;
+    color: white;
+    left: 50px;
+    top: 200px;
+    width: 300px;
+    height: 80px;
+    background: var(--primary-color); 
+    border-radius: 9999px;
+    z-index: 1000;
+}
+
+.pill-text {
+    top: 4px;
+    padding-left: 15px;
+    position: absolute;
+    text-align: center;
+    z-index: 10000;
+}
+
+.map-marker {
+    background: black;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: "Modak", system-ui;
+    font-size: 36px;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}

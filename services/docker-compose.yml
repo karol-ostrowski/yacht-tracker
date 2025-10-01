@@ -36,7 +36,6 @@ services:
       - "9250:9249"
     command: taskmanager
     volumes:
-    #   - ./flink_stream_processor/flink_job.py:/opt/flink/flink_job.py
       - ./flink_stream_processor/config.py:/opt/flink/config.py
       - ./flink_stream_processor/__init__.py:/opt/flink/__init__.py
       - ./flink_stream_processor/logging_setup.py:/opt/flink/logging_setup.py
@@ -47,6 +46,20 @@ services:
       FLINK_PROPERTIES=
       jobmanager.rpc.address: jobmanager
       metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+    networks:
+      - regaty-network
+
+  websocket:
+    build:
+      context: ./websocket
+    container_name: websocket
+    ports:
+      - 8000:8000
+    volumes:
+      - ./websocket:/opt/websocket
+      - ../logs/websocket:/logs
+    environment:
+      - UVICORN_HOST=0.0.0.0
     networks:
       - regaty-network
 
