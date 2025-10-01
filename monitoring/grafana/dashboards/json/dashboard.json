@@ -55,7 +55,7 @@
         "x": 0,
         "y": 0
       },
-      "id": 11,
+      "id": 13,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -81,7 +81,7 @@
             "uid": "P46B05499459EE360"
           },
           "editorMode": "code",
-          "expr": "sum(flink_taskmanager_job_task_numRecordsInPerSecond{task_name=\"Source:_raw_data_source____PROCESS______stream_key_by_map_operator__Map___stream_key_by_map_operator_\"})",
+          "expr": "sum(rate(flink_taskmanager_job_task_operator_total_on_time_events[5m]))\n+\nsum(rate(flink_taskmanager_job_task_operator_total_late_events[5m]))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -125,7 +125,7 @@
         "x": 4,
         "y": 0
       },
-      "id": 12,
+      "id": 14,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -151,7 +151,7 @@
             "uid": "P46B05499459EE360"
           },
           "editorMode": "code",
-          "expr": "sum(flink_taskmanager_job_task_numRecordsOutPerSecond{task_name=\"FlatMap_____PROCESS__Sink:_Writer____Sink:_Committer_\"})",
+          "expr": "rate(flink_taskmanager_job_task_operator_total_on_time_events[5m])",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -1058,7 +1058,7 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
