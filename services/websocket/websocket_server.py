@@ -9,9 +9,9 @@ This module implements a FastAPI application that:
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from aiokafka import AIOKafkaConsumer
 from contextlib import asynccontextmanager
-from logging_setup import logger
 import asyncio
 import uvicorn
+from logging_setup import logger
 from config import IN_TOPIC_NAME, KAFKA_BROKER, GROUP_ID
 
 active_connections = []
@@ -56,7 +56,7 @@ async def consume_messages() -> None:
 
     finally:
         await consumer.stop()
-        logger.info("Kafka consumer stopped")
+        logger.info("Kafka consumer stopped.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -65,11 +65,16 @@ async def lifespan(app: FastAPI):
     Args:
         app (FastAPI): Instance of the FastAPI application.
     """
-    asyncio.create_task(consume_messages())
+    consume_task = asyncio.create_task(consume_messages())
     yield
     for connection in active_connections:
         active_connections.remove(connection)
     logger.info("Closed all connections.")
+    consume_task.cancel()
+    try:
+        await consume_task
+    except asyncio.CancelledError:
+        pass
 
 app = FastAPI(lifespan=lifespan)
 
