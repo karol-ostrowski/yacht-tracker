@@ -1,8 +1,9 @@
 CREATE TABLE readings (
     reading_id SERIAL PRIMARY KEY,
     yacht_id INT NOT NULL,
-    location POINT NOT NULL,
-    timestamp TIMESTAMP PRECISION NOT NULL,
+    x DOUBLE PRECISION NOT NULL,
+    y DOUBLE PRECISION NOT NULL,
+    timestamp TIMESTAMPTZ NOT NULL,
     inst_speed DOUBLE PRECISION NOT NULL,
     time_taken DOUBLE PRECISION NOT NULL
 );
