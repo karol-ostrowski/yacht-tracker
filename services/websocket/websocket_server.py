@@ -30,9 +30,7 @@ def create_consumer() -> AIOKafkaConsumer:
         auto_offset_reset="latest",
         value_deserializer=lambda x: x.decode("utf-8")
     )
-
-    logger.info(f"Connected a consumer to {KAFKA_BROKER}")
-
+    
     return consumer
 
 async def consume_messages() -> None:
