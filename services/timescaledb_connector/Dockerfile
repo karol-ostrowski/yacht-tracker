@@ -1,7 +1,9 @@
 FROM python:3.13.2-slim
 
-WORKDIR /opt/timescaledb_connector
+WORKDIR /opt/services/timescaledb_connector
 
 RUN pip install aiokafka==0.12.0 psycopg[binary]==3.2.9
 
-CMD ["python", "connector.py"]
+ENV PYTHONPATH=/opt
+
+CMD ["python", "-m", "services.timescaledb_connector.connector"]

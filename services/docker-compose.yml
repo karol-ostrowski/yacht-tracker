@@ -56,7 +56,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./websocket:/opt/websocket
+      - ../services/websocket:/opt/services/websocket
       - ../logs/websocket:/logs
     environment:
       - UVICORN_HOST=0.0.0.0
@@ -68,7 +68,7 @@ services:
       context: ./timescaledb_connector
     container_name: tsdb_connector
     volumes:
-      - ./timescaledb_connector:/opt/timescaledb_connector
+      - ../services/timescaledb_connector:/opt/services/timescaledb_connector
       - ../logs/timescaledb_connector:/logs
     networks:
       - regaty-network
