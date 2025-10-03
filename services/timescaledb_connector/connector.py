@@ -4,10 +4,8 @@ from collections import deque
 import psycopg
 import asyncio
 import json
-from services.timescaledb_connector.config import IN_TOPIC_NAME, GROUP_ID, KAFKA_BROKER
+from services.timescaledb_connector.config import IN_TOPIC_NAME, GROUP_ID, KAFKA_BROKER, MAX_BUFFER
 from services.timescaledb_connector.logging_setup import logger
-
-MAX_BUFFER = 20
 
 def create_consumer() -> AIOKafkaConsumer:
     """Creates an asynchronous Kafka consumer.
