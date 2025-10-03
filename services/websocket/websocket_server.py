@@ -11,8 +11,8 @@ from aiokafka import AIOKafkaConsumer
 from contextlib import asynccontextmanager
 import asyncio
 import uvicorn
-from logging_setup import logger
-from config import IN_TOPIC_NAME, KAFKA_BROKER, GROUP_ID
+from services.websocket.logging_setup import logger
+from services.websocket.config import IN_TOPIC_NAME, KAFKA_BROKER, GROUP_ID
 
 active_connections = []
 
@@ -33,9 +33,12 @@ def create_consumer() -> AIOKafkaConsumer:
     
     return consumer
 
-async def consume_messages() -> None:
-    """Asynchronous loop sending data from Kafka topic to the websocket until stopped."""
-    consumer = create_consumer()
+async def consume_messages(consumer) -> None:
+    """Asynchronous loop sending data from Kafka topic to the websocket until stopped.
+    
+    Args:
+        consumer (AIOKafkaConsumer): Asynchronous Kafka consumer.
+    """
     await consumer.start()
 
     try:
@@ -46,7 +49,6 @@ async def consume_messages() -> None:
                 for connection in connections_copy:
                     try:
                         await connection.send_text(message.value)
-                        logger.info(f"Sent message: {message.value}")
                     except Exception as e:
                         logger.error(f"Failed to deliver a message: {e}")
                         if connection in active_connections:
@@ -63,7 +65,8 @@ async def lifespan(app: FastAPI):
     Args:
         app (FastAPI): Instance of the FastAPI application.
     """
-    consume_task = asyncio.create_task(consume_messages())
+    consumer = create_consumer()
+    consume_task = asyncio.create_task(consume_messages(consumer))
     yield
     for connection in active_connections:
         active_connections.remove(connection)
