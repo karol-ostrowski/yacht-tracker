@@ -1,5 +1,5 @@
-2025-10-02 19:07:26 [INFO] tsdb_connector - Consumer started
-2025-10-02 19:08:50 [ERROR] tsdb_connector - An error occured: consuming input failed: server closed the connection unexpectedly
+2025-10-03 13:20:34 [INFO] tsdb_connector - Consumer started
+2025-10-03 13:23:08 [ERROR] tsdb_connector - An error occured: consuming input failed: server closed the connection unexpectedly
 	This probably means the server terminated abnormally
 	before or while processing the request.
-2025-10-02 19:08:50 [INFO] tsdb_connector - Kafka consumer stopped.
+2025-10-03 13:23:08 [INFO] tsdb_connector - Kafka consumer stopped.
