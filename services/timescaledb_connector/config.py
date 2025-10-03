@@ -4,3 +4,4 @@ Kafka consumer for the custom TimescaleDB connector."""
 KAFKA_BROKER = "broker:9092"
 IN_TOPIC_NAME = "enriched_data"
 GROUP_ID = "tsdb_consumers"
+MAX_BUFFER = 20
