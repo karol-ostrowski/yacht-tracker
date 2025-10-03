@@ -1,0 +1,11 @@
+2025-10-02 17:21:57 [INFO] websocket - Closed all connections.
+2025-10-02 17:21:57 [INFO] websocket - Kafka consumer stopped.
+2025-10-02 17:22:06 [INFO] websocket - Connected a consumer to broker:9092
+2025-10-02 17:22:17 [INFO] websocket - Closed all connections.
+2025-10-02 17:22:17 [INFO] websocket - Kafka consumer stopped.
+2025-10-02 17:24:08 [INFO] websocket - Connected a consumer to broker:9092
+2025-10-02 17:24:10 [INFO] websocket - Closed all connections.
+2025-10-02 17:24:10 [INFO] websocket - Kafka consumer stopped.
+2025-10-02 17:28:27 [INFO] websocket - Connected a consumer to broker:9092
+2025-10-02 17:28:29 [INFO] websocket - Closed all connections.
+2025-10-02 17:28:29 [INFO] websocket - Kafka consumer stopped.

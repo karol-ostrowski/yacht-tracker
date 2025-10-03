@@ -4,8 +4,8 @@ from collections import deque
 import psycopg
 import asyncio
 import json
-from config import IN_TOPIC_NAME, GROUP_ID, KAFKA_BROKER
-from logging_setup import logger
+from services.timescaledb_connector.config import IN_TOPIC_NAME, GROUP_ID, KAFKA_BROKER
+from services.timescaledb_connector.logging_setup import logger
 
 MAX_BUFFER = 20
 
@@ -19,10 +19,10 @@ def create_consumer() -> AIOKafkaConsumer:
         IN_TOPIC_NAME,
         bootstrap_servers=KAFKA_BROKER,
         group_id=GROUP_ID,
-        auto_offset_reset="latest",
+        auto_offset_reset="earliest",
         value_deserializer=lambda x: json.loads(x.decode("utf-8"))
     )
-    logger.info(f"Connected a consumer to {KAFKA_BROKER}")
+    
     return consumer
 
 async def consume_messages(consumer: AIOKafkaConsumer, queue: deque, semaphore: asyncio.Semaphore) -> None:
@@ -33,9 +33,9 @@ async def consume_messages(consumer: AIOKafkaConsumer, queue: deque, semaphore: 
 
         queue (collections.deque): Stores batched messages to be sent to the database.
         
-        semaphore (asyncio.Semaphore): Semaphore.
+        semaphore (asyncio.Semaphore): A semaphore.
     """
-    buffer = []
+    buffer = list()
     try:
         await consumer.start()
         logger.info("Consumer started")
