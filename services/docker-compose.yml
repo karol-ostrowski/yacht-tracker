@@ -63,6 +63,16 @@ services:
     networks:
       - regaty-network
 
+  tsdb_connector:
+    build:
+      context: ./timescaledb_connector
+    container_name: tsdb_connector
+    volumes:
+      - ./timescaledb_connector:/opt/timescaledb_connector
+      - ../logs/timescaledb_connector:/logs
+    networks:
+      - regaty-network
+
 networks:
   regaty-network:
     external: true
