@@ -23,8 +23,8 @@ class MockAIOKafkaConsumer():
             raise StopAsyncIteration
         
     async def start(self):
-        await asyncio.sleep(0.2)
-
+        pass
+    
     async def stop(self):
         pass
 
@@ -36,6 +36,7 @@ sys.modules["aiokafka"] = aiokafka
 sys.modules["logging"] = MagicMock()
 sys.modules["logging.handlers"] = MagicMock()
 sys.modules["pathlib"] = MagicMock()
+sys.modules["psycopg"] = MagicMock()
 
 from services.timescaledb_connector.connector import (
     create_consumer,
