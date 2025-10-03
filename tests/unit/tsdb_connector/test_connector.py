@@ -35,6 +35,7 @@ aiokafka.AIOKafkaConsumer = MockAIOKafkaConsumer
 sys.modules["aiokafka"] = aiokafka
 sys.modules["logging"] = MagicMock()
 sys.modules["logging.handlers"] = MagicMock()
+sys.modules["pathlib"] = MagicMock()
 
 from services.timescaledb_connector.connector import (
     create_consumer,
