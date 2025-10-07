@@ -11,3 +11,4 @@ logs/websocket/*
 terraform/.env_raw_data
 terraform/.env_loki
 terraform/.env_mimir
+terraform/.terraform
