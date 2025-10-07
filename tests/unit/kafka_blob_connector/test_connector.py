@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import sys
 import json
 import asyncio
+import os
 
 class MockAIOKafkaConsumer():
     def __init__(self, topic, **kwargs):
@@ -37,6 +38,9 @@ sys.modules["logging"] = MagicMock()
 sys.modules["logging.handlers"] = MagicMock()
 sys.modules["pathlib"] = MagicMock()
 sys.modules["azure.storage.blob.aio"] = MagicMock()
+
+os.environ["AZURE_CONTAINER_NAME"] = "container_name"
+os.environ["AZURE_CONNECTION_STRING"] = "connection_string"
 
 from services.kafka_blob_connector.connector import (
     create_consumer,
