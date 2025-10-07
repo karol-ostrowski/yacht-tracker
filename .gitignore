@@ -8,4 +8,6 @@ logs/flink_job/*
 logs/kafka_blob_container/*
 logs/timescaledb_connector/*
 logs/websocket/*
-terraform/.env
+terraform/.env_raw_data
+terraform/.env_loki
+terraform/.env_mimir
