@@ -81,7 +81,7 @@ services:
       - ./kafka_blob_connector:/opt/services/kafka_blob_connector
       - ../logs/kafka_blob_connector:/logs
     env_file:
-      - ../terraform/.env
+      - ../terraform/.env_raw_data
     networks:
       - regaty-network
 

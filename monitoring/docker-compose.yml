@@ -10,7 +10,6 @@ services:
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/dashboards/json:/etc/grafana/provisioning/dashboards/json
       - ./grafana/alerting:/etc/grafana/provisioning/alerting
-    # environment settings added for the ease of use, not recommaneded in the production setting
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -47,7 +46,10 @@ services:
       - ./mimir/mimir.yaml:/etc/mimir/mimir.yaml
     command:
       - "--config.file=/etc/mimir/mimir.yaml"
+      - "--config.expand-env=true"
     restart: unless-stopped
+    env_file:
+      - ../terraform/.env_mimir
     networks:
       - regaty-network
 
@@ -60,9 +62,10 @@ services:
       - ./loki/loki.yaml:/etc/loki/loki.yaml
     command:
       - "--config.file=/etc/loki/loki.yaml"
+      - "--config.expand-env=true"
     restart: unless-stopped
-    depends_on:
-      - mimir
+    env_file:
+      - ../terraform/.env_loki
     networks:
       - regaty-network
 
