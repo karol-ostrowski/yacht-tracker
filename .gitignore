@@ -5,3 +5,7 @@ monitoring/prometheus/data/*
 logs/data_generator/*
 logs/flink/*
 logs/flink_job/*
+logs/kafka_blob_container/*
+logs/timescaledb_connector/*
+logs/websocket/*
+terraform/.env
