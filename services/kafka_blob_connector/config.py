@@ -1,3 +1,4 @@
+"""Config file for the custom Kafka-Azure Storage Blob connector."""
 import os
 
 KAFKA_BROKER = "broker:9092"

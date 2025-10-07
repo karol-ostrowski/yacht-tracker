@@ -1,3 +1,4 @@
+"""Custom connector sending batched data from a Kafka broker to an Azure Blob Storage instance."""
 from aiokafka import AIOKafkaConsumer
 from azure.storage.blob.aio import ContainerClient
 from collections import deque
@@ -77,10 +78,9 @@ async def upload_to_blob(container_client: ContainerClient, batch: list) -> None
     """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     blob_name = f"raw_data/{timestamp}.json"
-    
     blob_client = container_client.get_blob_client(blob=blob_name)
     
-    data = json.dumps(batch, indent=4)
+    data = json.dumps(batch)
     await blob_client.upload_blob(data, overwrite=True)
     logger.info(f"Uploaded data to {blob_name}.")
 
@@ -121,7 +121,6 @@ async def main():
             await consume_task
         except asyncio.CancelledError:
             pass
-
 
 if __name__ == "__main__":
     asyncio.run(main())
