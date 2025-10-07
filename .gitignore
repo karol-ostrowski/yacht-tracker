@@ -5,3 +5,12 @@ monitoring/prometheus/data/*
 logs/data_generator/*
 logs/flink/*
 logs/flink_job/*
+logs/kafka_blob_container/*
+logs/timescaledb_connector/*
+logs/websocket/*
+terraform/.env_raw_data
+terraform/.env_loki
+terraform/.env_mimir
+terraform/.terraform
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup

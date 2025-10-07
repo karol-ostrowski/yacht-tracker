@@ -1,0 +1,22 @@
+name: ci-kafka-blob-connector
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.9.22-alpine3.22
+    
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v5
+
+      - name: download pytest
+        run: pip install pytest==8.4.1
+
+      - name: run tests
+        run: pytest tests/unit/kafka_blob_connector

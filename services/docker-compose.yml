@@ -56,7 +56,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ../services/websocket:/opt/services/websocket
+      - ./websocket:/opt/services/websocket
       - ../logs/websocket:/logs
     environment:
       - UVICORN_HOST=0.0.0.0
@@ -68,8 +68,20 @@ services:
       context: ./timescaledb_connector
     container_name: tsdb_connector
     volumes:
-      - ../services/timescaledb_connector:/opt/services/timescaledb_connector
+      - ./timescaledb_connector:/opt/services/timescaledb_connector
       - ../logs/timescaledb_connector:/logs
+    networks:
+      - regaty-network
+
+  kafka-blob-connector:
+    build:
+      context: ./kafka_blob_connector
+    container_name: kafka-blob-connector
+    volumes:
+      - ./kafka_blob_connector:/opt/services/kafka_blob_connector
+      - ../logs/kafka_blob_connector:/logs
+    env_file:
+      - ../terraform/.env_raw_data
     networks:
       - regaty-network
 

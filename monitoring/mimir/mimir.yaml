@@ -7,13 +7,16 @@ limits:
   compactor_blocks_retention_period: 0
 
 blocks_storage:
-  backend: filesystem
+  backend: azure
+  azure:
+    account_name: "${AZURE_STORAGE_ACCOUNT_NAME}"
+    account_key: "${AZURE_STORAGE_ACCOUNT_KEY}"
+    container_name: "${AZURE_CONTAINER_NAME}"
   bucket_store:
     sync_dir: /tmp/mimir/tsdb-sync
-  filesystem:
-    dir: /tmp/mimir/data/tsdb
   tsdb:
     dir: /tmp/mimir/tsdb
+    flush_blocks_on_shutdown: true
 
 compactor:
   data_dir: /tmp/mimir/compactor
@@ -35,9 +38,10 @@ ingester:
     replication_factor: 1
 
 ruler_storage:
-  backend: filesystem
-  filesystem:
-    dir: /tmp/mimir/rules
+  azure:
+    account_name: "${AZURE_STORAGE_ACCOUNT_NAME}"
+    account_key: "${AZURE_STORAGE_ACCOUNT_KEY}"
+    container_name: "${AZURE_CONTAINER_NAME}"
 
 server:
   http_listen_port: 9009

@@ -29,9 +29,9 @@ async def consume_messages(consumer: AIOKafkaConsumer, queue: deque, semaphore: 
     Args:
         consumer (AIOKafkaConsumer): Asynchronous Kafka consumer.
 
-        queue (collections.deque): Stores batched messages to be sent to the database.
+        queue (deque): Stores batched messages to be sent to the database.
         
-        semaphore (asyncio.Semaphore): A semaphore.
+        semaphore (Semaphore): A semaphore.
     """
     buffer = list()
     try:
@@ -83,9 +83,11 @@ async def main():
                             batch
                         )
                         await aconn.commit()
+                        logger.info("Commited a batch to the database.")
                         
                     except Exception as e:
                         logger.error(f"An error occured: {e}")
+                        queue.appendleft(batch)
                         await aconn.rollback()
                         
     except KeyboardInterrupt:
