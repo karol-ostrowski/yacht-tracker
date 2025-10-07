@@ -1,5 +1,4 @@
 """Logging setup for the Kafka-Azure Blob Storage.
-
 Provides specific configuration for Python's logging module."""
 import logging
 from logging.handlers import TimedRotatingFileHandler
