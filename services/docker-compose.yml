@@ -9,14 +9,14 @@ services:
       - "9249:9249"
     command: jobmanager
     volumes:
-      - ./flink_stream_processor/flink_job.py:/opt/flink/flink_job.py
-      - ./flink_stream_processor/config.py:/opt/flink/config.py
-      - ./flink_stream_processor/__init__.py:/opt/flink/__init__.py
-      - ./flink_stream_processor/logging_setup.py:/opt/flink/logging_setup.py
-      - ./flink_stream_processor/transformations.py:/opt/flink/transformations.py
-      - ./flink_stream_processor/utils.py:/opt/flink/utils.py
+      - ./flink_stream_processor/flink_stream_processor/flink_job.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/flink_job.py
+      - ./flink_stream_processor/flink_stream_processor/config.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/config.py
+      - ./flink_stream_processor/flink_stream_processor/__init__.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/__init__.py
+      - ./flink_stream_processor/flink_stream_processor/logging_setup.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/logging_setup.py
+      - ./flink_stream_processor/flink_stream_processor/transformations.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/transformations.py
+      - ./flink_stream_processor/flink_stream_processor/utils.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/utils.py
       - ../logs/flink:/opt/flink/logs
-      - ../logs/flink_job:/opt/flink/flink_job_log
+      - ../logs/flink_job:/opt/flink/job_logs
       - ../logs/flink:/opt/flink/log
 
 
@@ -36,11 +36,11 @@ services:
       - "9250:9249"
     command: taskmanager
     volumes:
-      - ./flink_stream_processor/config.py:/opt/flink/config.py
-      - ./flink_stream_processor/__init__.py:/opt/flink/__init__.py
-      - ./flink_stream_processor/logging_setup.py:/opt/flink/logging_setup.py
-      - ./flink_stream_processor/transformations.py:/opt/flink/transformations.py
-      - ./flink_stream_processor/utils.py:/opt/flink/utils.py
+      - ./flink_stream_processor/flink_stream_processor/config.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/config.py
+      - ./flink_stream_processor/flink_stream_processor/__init__.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/__init__.py
+      - ./flink_stream_processor/flink_stream_processor/logging_setup.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/logging_setup.py
+      - ./flink_stream_processor/flink_stream_processor/transformations.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/transformations.py
+      - ./flink_stream_processor/flink_stream_processor/utils.py:/opt/flink/services/flink_stream_processor/flink_stream_processor/utils.py
     environment:
     - |
       FLINK_PROPERTIES=
@@ -56,7 +56,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./websocket:/opt/services/websocket
+      - ./websocket/websocket:/opt/services/websocket/websocket
       - ../logs/websocket:/logs
     environment:
       - UVICORN_HOST=0.0.0.0
@@ -68,7 +68,7 @@ services:
       context: ./timescaledb_connector
     container_name: tsdb_connector
     volumes:
-      - ./timescaledb_connector:/opt/services/timescaledb_connector
+      - ./timescaledb_connector/timescaledb_connector:/opt/services/timescaledb_connector/timescaledb_connector
       - ../logs/timescaledb_connector:/logs
     networks:
       - regaty-network
@@ -78,7 +78,7 @@ services:
       context: ./kafka_blob_connector
     container_name: kafka-blob-connector
     volumes:
-      - ./kafka_blob_connector:/opt/services/kafka_blob_connector
+      - ./kafka_blob_connector/kafka_blob_connector:/opt/services/kafka_blob_connector/kafka_blob_connector
       - ../logs/kafka_blob_connector:/logs
     env_file:
       - ../terraform/.env_raw_data

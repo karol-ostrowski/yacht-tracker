@@ -1,0 +1,17 @@
+2025-10-08 21:59:47 [INFO] KafkaBlobConnector - Connected to container raw-data-storage-container
+2025-10-08 21:59:48 [INFO] KafkaBlobConnector - Consumer started.
+2025-10-08 22:00:23 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220023_072365.json.
+2025-10-08 22:00:41 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220041_763713.json.
+2025-10-08 22:01:00 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220100_363332.json.
+2025-10-08 22:01:19 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220119_042348.json.
+2025-10-08 22:01:37 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220137_682807.json.
+2025-10-08 22:01:56 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220156_277862.json.
+2025-10-08 22:02:15 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220214_964420.json.
+2025-10-08 22:02:33 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220233_665950.json.
+2025-10-08 22:02:52 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220252_378162.json.
+2025-10-08 22:03:11 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220311_173541.json.
+2025-10-08 22:03:29 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220329_775667.json.
+2025-10-08 22:03:48 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220348_383690.json.
+2025-10-08 22:04:07 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220407_228449.json.
+2025-10-08 22:04:25 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220425_835472.json.
+2025-10-08 22:04:44 [INFO] KafkaBlobConnector - Uploaded data to raw_data/20251008_220444_587457.json.

@@ -38,7 +38,7 @@ sys.modules["logging.handlers"] = MagicMock()
 sys.modules["pathlib"] = MagicMock()
 sys.modules["psycopg"] = MagicMock()
 
-from services.timescaledb_connector.connector import (
+from services.timescaledb_connector.timescaledb_connector.connector import (
     create_consumer,
     consume_messages,
     KAFKA_BROKER,

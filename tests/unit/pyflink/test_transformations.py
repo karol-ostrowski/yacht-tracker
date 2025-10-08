@@ -80,7 +80,7 @@ sys.modules['pyflink.datastream'] = datastream
 sys.modules['pyflink.datastream.state'] = MagicMock()
 sys.modules['pyflink.datastream.functions'] = functions
 
-from services.flink_stream_processor.transformations import (
+from services.flink_stream_processor.flink_stream_processor.transformations import (
     CalculateInstSpeed,
     LateMetrics,
     ParseAndFilter,

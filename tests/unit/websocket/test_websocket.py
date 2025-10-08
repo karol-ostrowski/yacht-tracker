@@ -39,7 +39,7 @@ sys.modules["pathlib"] = MagicMock()
 sys.modules["fastapi"] = MagicMock()
 sys.modules["uvicorn"] = MagicMock()
 
-from services.websocket.websocket_server import (
+from services.websocket.websocket.websocket_server import (
     create_consumer,
     consume_messages,
     KAFKA_BROKER,
@@ -62,6 +62,6 @@ def test_consume_messages():
     consumer = create_consumer()
     mock_connection = MagicMock()
     mock_connections = [mock_connection]
-    with patch("services.websocket.websocket_server.active_connections", mock_connections):
+    with patch("services.websocket.websocket.websocket_server.active_connections", mock_connections):
         asyncio.run(consume_messages(consumer))
     mock_connection.send_text.assert_called_once()

@@ -1,6 +1,6 @@
 FROM python:3.13.2-slim
 
-WORKDIR /opt/services/websocket
+WORKDIR /opt/services/websocket/websocket
 
 RUN pip install aiokafka==0.12.0 fastapi==0.118.0 uvicorn==0.37.0 websockets==15.0.1
 
