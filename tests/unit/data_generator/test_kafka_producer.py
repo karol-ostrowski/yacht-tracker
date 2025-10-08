@@ -18,7 +18,7 @@ sys.modules["logging"] = MagicMock()
 sys.modules["logging.handlers"] = MagicMock()
 sys.modules["kafka"] = kafka
 
-from data_generator.kafka_producer import (
+from data_generator.data_generator.kafka_producer import (
     create_producer, 
     generate_sailboats, 
     produce_data
@@ -44,7 +44,7 @@ def test_create_producer():
     assert serializer({"k": "v"}) == json.dumps({"k": "v"}).encode("utf-8")
 
 
-@patch('data_generator.kafka_producer.Sailboat')
+@patch('data_generator.data_generator.kafka_producer.Sailboat')
 def test_generate_sailboats(mock_sailboat_class,
                             mock_sailboat):
     """Test generating given number of sailboats."""
@@ -57,7 +57,7 @@ def test_generate_sailboats(mock_sailboat_class,
     assert result[num_of_boats // 2] == mock_sailboat_class.return_value
 
 
-@patch('data_generator.kafka_producer.Sailboat')
+@patch('data_generator.data_generator.kafka_producer.Sailboat')
 def test_generate_sailboats_default_value(mock_sailboat_class,
                                           mock_sailboat):
     """Test generating default number of sailboats."""
@@ -72,7 +72,7 @@ def test_generate_sailboats_default_value(mock_sailboat_class,
 @patch('time.sleep')
 @patch('time.time')
 @patch('random.uniform')
-@patch('data_generator.kafka_producer.generate_sailboats')
+@patch('data_generator.data_generator.kafka_producer.generate_sailboats')
 def test_produce_data(mock_generate_sailboats,
                       mock_uniform,
                       mock_time,
@@ -111,7 +111,7 @@ def test_produce_data(mock_generate_sailboats,
 @patch('time.sleep')
 @patch('time.time')
 @patch('random.uniform')
-@patch('data_generator.kafka_producer.generate_sailboats')
+@patch('data_generator.data_generator.kafka_producer.generate_sailboats')
 def test_produce_data_produce_late_event(mock_generate_sailboats,
                       mock_uniform,
                       mock_time,

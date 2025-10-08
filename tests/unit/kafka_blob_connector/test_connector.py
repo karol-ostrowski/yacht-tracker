@@ -42,7 +42,7 @@ sys.modules["azure.storage.blob.aio"] = MagicMock()
 os.environ["AZURE_CONTAINER_NAME"] = "container_name"
 os.environ["AZURE_CONNECTION_STRING"] = "connection_string"
 
-from services.kafka_blob_connector.connector import (
+from services.kafka_blob_connector.kafka_blob_connector.connector import (
     create_consumer,
     consume_messages,
     # upload_to_blob, # no logic to test here

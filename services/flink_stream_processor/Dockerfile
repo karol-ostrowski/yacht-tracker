@@ -100,21 +100,27 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     python3.9 get-pip.py && \
     rm get-pip.py
 
-COPY ./flink-job-requirements.txt /opt/flink/requirements.txt
+COPY ./flink_stream_processor/flink-job-requirements.txt /opt/flink/requirements.txt
 
 RUN pip install -r requirements.txt
 
-COPY ./flink-metrics-prometheus-2.0.0.jar $FLINK_HOME/lib/flink-metrics-prometheus-2.0.0.jar
+COPY ./jars/flink-metrics-prometheus-2.0.0.jar $FLINK_HOME/lib/flink-metrics-prometheus-2.0.0.jar
 
-COPY ./kafka-clients-4.0.0.jar $FLINK_HOME/lib/kafka-clients-4.0.0.jar
+COPY ./jars/kafka-clients-4.0.0.jar $FLINK_HOME/lib/kafka-clients-4.0.0.jar
 
-COPY ./flink-connector-kafka-4.0.0-2.0.jar $FLINK_HOME/lib/flink-connector-kafka-4.0.0-2.0.jar
-# uncomment for production
-# COPY ./flink_job.py /opt/flink/flink_job.py
+COPY ./jars/flink-connector-kafka-4.0.0-2.0.jar $FLINK_HOME/lib/flink-connector-kafka-4.0.0-2.0.jar
 
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
+ENV PYTHONPATH=/opt/flink
+
+RUN touch /opt/flink/__init__.py
+
+RUN mkdir /opt/flink/services; touch /opt/flink/services/__init__.py
+
+RUN mkdir /opt/flink/services/flink_stream_processor; touch /opt/flink/services/flink_stream_processor/__init__.py
 
 EXPOSE 6123 8081 9249
 
