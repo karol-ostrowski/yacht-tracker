@@ -1,3 +1,6 @@
-2025-10-08 21:59:29 [INFO] websocket - Closed all connections.
-2025-10-08 21:59:29 [INFO] websocket - Kafka consumer stopped.
-2025-10-08 22:00:33 [INFO] websocket - A client has connected.
+2025-10-09 10:36:42 [INFO] websocket - A client has connected.
+2025-10-09 10:36:46 [INFO] websocket - A client has connected.
+2025-10-09 10:36:48 [ERROR] websocket - Failed to deliver a message: 
+2025-10-09 10:36:48 [ERROR] websocket - Failed to deliver a message: 
+2025-10-09 10:41:25 [INFO] websocket - A client has connected.
+2025-10-09 10:41:30 [ERROR] websocket - Failed to deliver a message: 

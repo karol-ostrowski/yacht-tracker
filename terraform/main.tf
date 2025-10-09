@@ -20,7 +20,7 @@ resource "azurerm_resource_group" "rg" {
 
 resource "azurerm_storage_account" "monitoring" {
   name                     = var.monitoring_storage_account_name
-  resource_group_name      = var.resource_group_name
+  resource_group_name      = azurerm_resource_group.rg.name
   location                 = var.location
   account_tier             = var.monitoring_storage_account_tier
   account_replication_type = var.monitoring_storage_account_replication_type
@@ -38,7 +38,7 @@ resource "azurerm_storage_container" "mimir" {
 
 resource "azurerm_storage_account" "rawdata" {
   name                     = var.raw_data_storage_account_name
-  resource_group_name      = var.resource_group_name
+  resource_group_name      = azurerm_resource_group.rg.name
   location                 = var.location
   account_tier             = var.raw_data_storage_account_tier
   account_replication_type = var.raw_data_storage_account_replication_type

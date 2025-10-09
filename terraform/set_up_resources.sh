@@ -1,3 +1,5 @@
+#!/bin/bash
+
 terraform apply -auto-approve
 
 echo "AZURE_CONNECTION_STRING=$(terraform output raw_data_connection_string)" > .env_raw_data
