@@ -7,6 +7,13 @@ import asyncio
 import os
 
 class MockAIOKafkaConsumer():
+    """Mock AIOKafkaConsumer object.
+    
+    Args:
+        topic (Any): Topic attribute.
+
+        **kwargs (Any): kwargs.
+    """
     def __init__(self, topic, **kwargs):
         self.topic = topic
         for key, value in kwargs.items():

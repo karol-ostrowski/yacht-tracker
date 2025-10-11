@@ -1,3 +1,4 @@
+"""Helper script for the PyFlink job."""
 from pyflink.datastream import OutputTag
 from pyflink.common.typeinfo import Types
 

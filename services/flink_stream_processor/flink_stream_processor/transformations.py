@@ -1,3 +1,4 @@
+"""A script containing transformations and metric generators used in the PyFlink job."""
 import time
 import json
 from pyflink.common.typeinfo import Types

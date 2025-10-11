@@ -1,3 +1,4 @@
+"""Config file for the PyFlink script."""
 KAFKA_BROKER = "broker:9092"
 IN_TOPIC_NAME = "raw_sensor_data"
 OUT_TOPIC_NAME = "enriched_data"

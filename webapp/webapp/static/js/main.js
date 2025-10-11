@@ -23,7 +23,14 @@ window.onload = function() {
 };
 
 function create_markers(map) {
-    /*Generates a differently colored marker with an ID on it for each tracked yacht.*/
+    /*Generates a differently colored marker with an ID on it for each tracked yacht.
+    
+    Args:
+        map: A Leaflet map object instance.
+
+    Returns:
+        markers: A map object containing markers representing yachts on the map.
+    */
     const markers = new Map();
     const colors = ["blue", "red", "green", "orange", "purple", "brown"]
 
@@ -63,7 +70,11 @@ const speed6Div = document.getElementById('speed6');
 let speed = 0;
 
 function connect_websocket(markers) {
-    /*Connects to the WebSocket*/
+    /*Connects to the WebSocket
+    
+    Args:
+        markers: A map object containing markers representing yachts on the map.
+    */
     const url = "ws://localhost:8000/ws"
 
     ws = new WebSocket(url)
