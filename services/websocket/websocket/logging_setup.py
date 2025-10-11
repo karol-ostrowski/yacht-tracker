@@ -1,5 +1,4 @@
 """Logging setup for the FastAPI WebSocket.
-
 Provides specific configuration for Python's logging module."""
 import logging
 from pathlib import Path

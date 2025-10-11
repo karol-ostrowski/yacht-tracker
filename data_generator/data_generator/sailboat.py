@@ -4,22 +4,27 @@ import random
 class Sailboat:
     """Creates fake sailboat sensor data.
     
+    Args:
+        id (int): Identification number of a sailboat.
+
     Attributes:
-        id: Identification number of a sailboat.
-        x: x-coordinate, randomly generated upon creation, changed by using the move() method.
-        y: y-coordinate, randomly generated upon creation, changed by using the move() method.
-        horizontal_speed: x-axis component of the speed, randomly generated,
+        x (float): x-coordinate, randomly generated upon creation, changed by using the move() method.
+
+        y (float): y-coordinate, randomly generated upon creation, changed by using the move() method.
+        
+        horizontal_speed (float): x-axis component of the speed, randomly generated,
                           changed by using the move() method.
-        vertical_speed: y-axis component of the speed, randomly generated,
+
+        vertical_speed (float): y-axis component of the speed, randomly generated,
                           changed by using the move() method.
     """
-    def __init__(self, id):
+    def __init__(self, id: int):
         """Initializes a Sailboat object.
 
         Args:
             id: Identification number of a sailboat.
         """
-        self.id: int = id
+        self.id = id
         self.x: float = random.uniform(21020602, 21043111) / 1000000
         self.y: float = random.uniform(52439085, 52456344) / 1000000
         self.horizontal_speed: float = random.uniform(-0.00005, 0.00005)

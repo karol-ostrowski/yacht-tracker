@@ -1,3 +1,4 @@
+"""Logging module setup for the PyFlink script."""
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
